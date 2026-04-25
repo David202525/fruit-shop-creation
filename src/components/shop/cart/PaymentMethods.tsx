@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { User } from '@/types/shop';
@@ -15,7 +16,7 @@ interface PaymentMethodsProps {
   deliveryAddress: string;
   selectedZoneId: number | null;
   deliveryCity: string;
-  onCheckout: (paymentMethod: string, deliveryType: string, deliveryZoneId?: number, city?: string, address?: string) => void;
+  onCheckout: (paymentMethod: string, deliveryType: string, deliveryZoneId?: number, city?: string, address?: string) => void | Promise<void>;
 }
 
 export const PaymentMethods = ({
@@ -33,6 +34,18 @@ export const PaymentMethods = ({
   deliveryCity,
   onCheckout
 }: PaymentMethodsProps) => {
+  const [loadingMethod, setLoadingMethod] = useState<string | null>(null);
+
+  const handleClick = async (method: string) => {
+    if (loadingMethod) return;
+    setLoadingMethod(method);
+    try {
+      await onCheckout(method, deliveryType, selectedZoneId || undefined, deliveryCity, deliveryAddress);
+    } finally {
+      // Сбросим состояние через 800мс чтобы успел произойти редирект на платёжный шлюз
+      setTimeout(() => setLoadingMethod(null), 800);
+    }
+  };
   if (!selectedCity) {
     return (
       <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-300 dark:border-yellow-700 rounded-lg">
@@ -49,16 +62,22 @@ export const PaymentMethods = ({
     <div className="space-y-2">
       {user && (
         <Button
-          onClick={() => onCheckout('balance', deliveryType, selectedZoneId || undefined, deliveryCity, deliveryAddress)}
+          onClick={() => handleClick('balance')}
           variant="outline"
           className="w-full justify-start h-auto py-4 border-2 group hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:border-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
-          disabled={isDisabled}
+          disabled={isDisabled || !!loadingMethod}
         >
           <div className="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-white/20 flex items-center justify-center mr-3 flex-shrink-0 transition-colors duration-300">
-            <Icon name="Wallet" size={20} className="text-blue-600 group-hover:text-white" />
+            {loadingMethod === 'balance' ? (
+              <Icon name="Loader2" size={20} className="text-blue-600 group-hover:text-white animate-spin" />
+            ) : (
+              <Icon name="Wallet" size={20} className="text-blue-600 group-hover:text-white" />
+            )}
           </div>
           <div className="text-left flex-1">
-            <div className="font-semibold group-hover:text-white">Балансом сайта</div>
+            <div className="font-semibold group-hover:text-white">
+              {loadingMethod === 'balance' ? 'Оформляем заказ...' : 'Балансом сайта'}
+            </div>
             <div className="text-xs text-foreground/70 group-hover:text-white/90 mt-1">
               {preorderEnabled
                 ? `Предоплата: ${(totalPrice * 0.5).toFixed(2)} ₽ (баланс: ${user.balance} ₽)`
@@ -69,20 +88,28 @@ export const PaymentMethods = ({
       )}
       
       <Button
-        onClick={() => onCheckout('card', deliveryType, selectedZoneId || undefined, deliveryCity, deliveryAddress)}
+        onClick={() => handleClick('card')}
         variant="outline"
         className="w-full justify-start h-auto py-4 border-2 group hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:border-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
-        disabled={isDisabled}
+        disabled={isDisabled || !!loadingMethod}
       >
         <div className="w-10 h-10 rounded-full bg-green-100 group-hover:bg-white/20 flex items-center justify-center mr-3 flex-shrink-0 transition-colors duration-300">
-          <Icon name="CreditCard" size={20} className="text-green-600 group-hover:text-white" />
+          {loadingMethod === 'card' ? (
+            <Icon name="Loader2" size={20} className="text-green-600 group-hover:text-white animate-spin" />
+          ) : (
+            <Icon name="CreditCard" size={20} className="text-green-600 group-hover:text-white" />
+          )}
         </div>
         <div className="text-left flex-1">
-          <div className="font-semibold group-hover:text-white">Банковская карта</div>
+          <div className="font-semibold group-hover:text-white">
+            {loadingMethod === 'card' ? 'Готовим оплату...' : 'Банковская карта'}
+          </div>
           <div className="text-xs text-foreground/70 group-hover:text-white/90 mt-1">
-            {preorderEnabled
-              ? `Предоплата: ${(totalPrice * 0.5).toFixed(2)} ₽`
-              : 'Оплата через Альфабанк'}
+            {loadingMethod === 'card'
+              ? 'Перенаправляем на Альфабанк, не закрывайте страницу'
+              : preorderEnabled
+                ? `Предоплата: ${(totalPrice * 0.5).toFixed(2)} ₽`
+                : 'Оплата через Альфабанк'}
           </div>
         </div>
       </Button>
@@ -91,10 +118,10 @@ export const PaymentMethods = ({
 
       {isCashPaymentAvailable && (
         <Button
-          onClick={() => onCheckout('cash', deliveryType, selectedZoneId || undefined, deliveryCity, deliveryAddress)}
+          onClick={() => handleClick('cash')}
           variant="outline"
           className="w-full justify-start h-auto py-4 border-2 group hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:border-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
-          disabled={isDisabled}
+          disabled={isDisabled || !!loadingMethod}
         >
           <div className="w-10 h-10 rounded-full bg-amber-100 group-hover:bg-white/20 flex items-center justify-center mr-3 flex-shrink-0 transition-colors duration-300">
             <Icon name="Banknote" size={20} className="text-amber-600 group-hover:text-white" />

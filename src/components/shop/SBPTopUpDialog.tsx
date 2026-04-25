@@ -63,21 +63,33 @@ const SBPTopUpDialog: React.FC<SBPTopUpDialogProps> = ({ open, onOpenChange, use
         })
       });
 
-      const data = await response.json();
-
-      if (data.success && data.payment_url) {
-        window.location.href = data.payment_url;
-      } else {
-        toast({
-          title: 'Ошибка',
-          description: data.error || data.message || 'Не удалось создать платёж',
-          variant: 'destructive'
-        });
+      let data: { success?: boolean; payment_url?: string; error?: string; message?: string } | null = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
       }
+
+      if (response.ok && data?.success && data?.payment_url) {
+        window.location.href = data.payment_url;
+        return;
+      }
+
+      const description = data?.message
+        || data?.error
+        || (response.status === 403
+              ? 'Сервер отклонил запрос (403). Если вы открываете сайт по http://, попробуйте https://, либо очистите кэш и cookies.'
+              : `Не удалось создать платёж (код ${response.status})`);
+
+      toast({
+        title: 'Ошибка оплаты',
+        description,
+        variant: 'destructive'
+      });
     } catch (error) {
       toast({
-        title: 'Ошибка',
-        description: 'Не удалось создать платёж',
+        title: 'Нет связи с платёжным шлюзом',
+        description: 'Проверьте интернет-соединение и попробуйте снова. Если сайт открыт по http://, используйте https://.',
         variant: 'destructive'
       });
     } finally {
