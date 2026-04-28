@@ -6,7 +6,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const BASE_URL = process.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// По умолчанию используем относительный путь /api — это работает и для HTTPS-режима через Traefik,
+// и при доступе по домену. При запуске без домена пользователь должен указать VITE_API_BASE_URL=http://IP:8000.
+const BASE_URL = process.env.VITE_API_BASE_URL || '/api';
 
 // UUID → имя функции (полный маппинг всех функций проекта)
 const UUID_TO_FUNCTION = {
@@ -110,3 +112,23 @@ for (const file of files) {
 
 console.log(`\nPatched ${totalPatched} URL(s) in ${files.length} scanned files.`);
 console.log(`Backend URL: ${BASE_URL}`);
+
+// Финальная проверка: ищем все оставшиеся functions.poehali.dev URL в исходниках,
+// чтобы не пропустить UUID, которых нет в маппинге.
+const LEFTOVER_RE = /https:\/\/functions\.poehali\.dev\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/g;
+const leftover = new Set();
+for (const file of files) {
+  const content = fs.readFileSync(file, 'utf8');
+  const matches = content.match(LEFTOVER_RE);
+  if (matches) {
+    for (const m of matches) {
+      leftover.add(`${m}  -->  ${path.relative(SOURCE_DIR, file)}`);
+    }
+  }
+}
+if (leftover.size > 0) {
+  console.warn(`\n[WARN] Найдены ${leftover.size} неперехваченных UUID — добавь их в UUID_TO_FUNCTION:`);
+  for (const item of leftover) {
+    console.warn(`   ${item}`);
+  }
+}

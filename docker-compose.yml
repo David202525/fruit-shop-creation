@@ -152,9 +152,9 @@ services:
       context: .
       dockerfile: docker/Dockerfile.frontend
       args:
-        # Если профиль https — API через /api на том же домене
-        # Если без домена — прямой URL на порт 8000
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://${SERVER_HOST:-localhost}:8000}
+        # По умолчанию относительный путь /api — работает и для HTTPS-режима через Traefik.
+        # Для запуска без домена укажи в .env: VITE_API_BASE_URL=http://IP:8000
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
     container_name: nursery_frontend
     restart: unless-stopped
     depends_on:
