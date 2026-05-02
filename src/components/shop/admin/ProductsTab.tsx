@@ -28,12 +28,37 @@ interface ProductsTabProps {
 
 const ProductsTab = ({ products, onAddProduct, onEditProduct, onDeleteProduct }: ProductsTabProps) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const filteredProducts = products.filter(product => 
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.category_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredProducts.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredProducts.map(p => p.id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!window.confirm(`Удалить выбранные товары (${selectedIds.length} шт.)? Это действие нельзя отменить.`)) {
+      return;
+    }
+    for (const id of selectedIds) {
+      await onDeleteProduct(id);
+    }
+    setSelectedIds([]);
+  };
+
+  const allSelected = filteredProducts.length > 0 && selectedIds.length === filteredProducts.length;
 
   return (
     <div className="space-y-3 sm:space-y-4">
@@ -56,6 +81,34 @@ const ProductsTab = ({ products, onAddProduct, onEditProduct, onDeleteProduct }:
         />
       </div>
 
+      {filteredProducts.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 bg-muted/50 rounded-lg border">
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={toggleSelectAll}
+              className="w-5 h-5 cursor-pointer accent-red-600"
+            />
+            <span className="text-sm font-medium">
+              {selectedIds.length > 0 ? `Выбрано: ${selectedIds.length}` : 'Выбрать все'}
+            </span>
+          </label>
+          {selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDelete}
+              style={{ backgroundColor: '#dc2626', color: 'white' }}
+              className="w-full sm:w-auto hover:opacity-90"
+            >
+              <Icon name="Trash2" size={16} className="mr-2" />
+              Удалить выбранные ({selectedIds.length})
+            </Button>
+          )}
+        </div>
+      )}
+
       <div className="grid gap-3 sm:gap-4">
         {filteredProducts.length === 0 && searchQuery ? (
           <div className="text-center py-8 text-muted-foreground">
@@ -64,9 +117,15 @@ const ProductsTab = ({ products, onAddProduct, onEditProduct, onDeleteProduct }:
           </div>
         ) : (
           filteredProducts.map(product => (
-            <Card key={product.id}>
+            <Card key={product.id} className={selectedIds.includes(product.id) ? 'ring-2 ring-red-500' : ''}>
               <CardHeader className="p-3 sm:p-6">
                 <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(product.id)}
+                    onChange={() => toggleSelect(product.id)}
+                    className="w-5 h-5 cursor-pointer accent-red-600 mt-1 flex-shrink-0"
+                  />
                   <img 
                     src={product.image_url} 
                     alt={product.name} 
