@@ -103,11 +103,11 @@ export default function FaqManager({
                         })
                       }
                     />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={() => handleUpdateFaq(editingFaq)}>
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" onClick={() => handleUpdateFaq(editingFaq)} className="flex-1 sm:flex-none">
                         Сохранить
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => setEditingFaq(null)}>
+                      <Button size="sm" variant="outline" onClick={() => setEditingFaq(null)} className="flex-1 sm:flex-none">
                         Отмена
                       </Button>
                     </div>
@@ -130,8 +130,8 @@ export default function FaqManager({
                         ))}
                       </div>
                     )}
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => setEditingFaq(faq)}>
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" variant="outline" onClick={() => setEditingFaq(faq)} className="flex-1 sm:flex-none">
                         <Icon name="Edit" size={14} className="mr-1" />
                         Редактировать
                       </Button>
@@ -139,6 +139,7 @@ export default function FaqManager({
                         size="sm"
                         variant="outline"
                         onClick={() => handleToggleActive(faq)}
+                        className="flex-1 sm:flex-none"
                       >
                         {faq.is_active ? 'Деактивировать' : 'Активировать'}
                       </Button>
@@ -146,6 +147,7 @@ export default function FaqManager({
                         size="sm"
                         variant="destructive"
                         onClick={() => onDeleteFaq(faq.id)}
+                        className="flex-1 sm:flex-none"
                       >
                         <Icon name="Trash2" size={14} className="mr-1" />
                         Удалить
