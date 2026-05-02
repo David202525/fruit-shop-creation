@@ -119,6 +119,44 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         elif method == 'PUT':
             body_data = json.loads(event.get('body', '{}'))
             
+            timer_only = (
+                'chat_response_warning_seconds' in body_data
+                and 'chat_response_danger_seconds' in body_data
+                and 'site_name' not in body_data
+            )
+            if timer_only:
+                try:
+                    warn_sec = int(body_data.get('chat_response_warning_seconds', 60))
+                    danger_sec = int(body_data.get('chat_response_danger_seconds', 180))
+                    if warn_sec < 5 or danger_sec < 5 or danger_sec <= warn_sec:
+                        return {
+                            'statusCode': 400,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({'error': 'Invalid timer values'}),
+                            'isBase64Encoded': False
+                        }
+                    cur.execute(
+                        f"UPDATE site_settings SET chat_response_warning_seconds = {warn_sec}, chat_response_danger_seconds = {danger_sec} WHERE id = 1"
+                    )
+                    if cur.rowcount == 0:
+                        cur.execute(
+                            f"INSERT INTO site_settings (id, chat_response_warning_seconds, chat_response_danger_seconds) VALUES (1, {warn_sec}, {danger_sec})"
+                        )
+                    conn.commit()
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'success': True, 'chat_response_warning_seconds': warn_sec, 'chat_response_danger_seconds': danger_sec}),
+                        'isBase64Encoded': False
+                    }
+                except Exception as e:
+                    return {
+                        'statusCode': 500,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': str(e)}),
+                        'isBase64Encoded': False
+                    }
+            
             def safe_str(value):
                 if value is None:
                     return ''

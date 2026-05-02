@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { formatDateTime } from '@/lib/dateUtils';
+import ResponseTimer from './support-chat/ResponseTimer';
 
 interface ChatMessage {
   id: number;
@@ -36,6 +37,8 @@ interface ChatWindowProps {
   onTakeChat: (chatId: number) => void;
   onCloseChat: () => void;
   isMobile?: boolean;
+  responseWarningSeconds?: number;
+  responseDangerSeconds?: number;
 }
 
 export default function ChatWindow({
@@ -48,13 +51,30 @@ export default function ChatWindow({
   onTakeChat,
   onCloseChat,
   isMobile = false,
+  responseWarningSeconds = 60,
+  responseDangerSeconds = 180,
 }: ChatWindowProps) {
+  const lastMsg = messages[messages.length - 1];
+  const showTimer =
+    selectedChat?.status === 'active' &&
+    selectedChat?.admin_id === currentUserId &&
+    lastMsg?.sender_type === 'user';
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="flex-shrink-0">
-        <CardTitle className="text-base sm:text-lg truncate">
-          {selectedChat ? `Чат #${selectedChat.id} - ${selectedChat.user_name}` : 'Выберите чат'}
-        </CardTitle>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <CardTitle className="text-base sm:text-lg truncate flex-1 min-w-0">
+            {selectedChat ? `Чат #${selectedChat.id} - ${selectedChat.user_name}` : 'Выберите чат'}
+          </CardTitle>
+          {showTimer && (
+            <ResponseTimer
+              lastUserMessageAt={lastMsg?.created_at || null}
+              warningSeconds={responseWarningSeconds}
+              dangerSeconds={responseDangerSeconds}
+            />
+          )}
+        </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col min-h-0">
         {selectedChat ? (

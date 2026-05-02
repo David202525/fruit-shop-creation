@@ -6,6 +6,7 @@ import ChatList from './ChatList';
 import ChatWindow from './ChatWindow';
 import FaqManager from './FaqManager';
 import ArchiveView from './support-chat/ArchiveView';
+import ResponseTimerSettings from './support-chat/ResponseTimerSettings';
 import { useChatActions } from './support-chat/useChatActions';
 import { useFaqActions } from './support-chat/useFaqActions';
 import { useArchiveActions } from './support-chat/useArchiveActions';
@@ -35,6 +36,21 @@ export default function SupportChatTab({ userId, userName, isSuperAdmin = false 
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [archivedChats, setArchivedChats] = useState<ArchivedChat[]>([]);
   const [selectedArchive, setSelectedArchive] = useState<ArchivedChat | null>(null);
+  const [responseWarningSeconds, setResponseWarningSeconds] = useState<number>(60);
+  const [responseDangerSeconds, setResponseDangerSeconds] = useState<number>(180);
+
+  useEffect(() => {
+    const API_SETTINGS = 'https://functions.poehali.dev/9b1ac59e-93b6-41de-8974-a7f58d4ffaf9';
+    fetch(`${API_SETTINGS}?t=${Date.now()}`)
+      .then((r) => r.json())
+      .then((data) => {
+        const warn = Number(data?.chat_response_warning_seconds);
+        const danger = Number(data?.chat_response_danger_seconds);
+        if (warn > 0) setResponseWarningSeconds(warn);
+        if (danger > 0) setResponseDangerSeconds(danger);
+      })
+      .catch(() => {});
+  }, []);
 
   const loadChats = async () => {
     try {
@@ -197,6 +213,8 @@ export default function SupportChatTab({ userId, userName, isSuperAdmin = false 
               onTakeChat={chatActions.takeChat}
               onCloseChat={handleCloseChat}
               currentUserId={userId}
+              responseWarningSeconds={responseWarningSeconds}
+              responseDangerSeconds={responseDangerSeconds}
             />
           </div>
 
@@ -233,6 +251,8 @@ export default function SupportChatTab({ userId, userName, isSuperAdmin = false 
                   onTakeChat={chatActions.takeChat}
                   onCloseChat={handleCloseChat}
                   currentUserId={userId}
+                  responseWarningSeconds={responseWarningSeconds}
+                  responseDangerSeconds={responseDangerSeconds}
                 />
               </div>
             )}
@@ -241,12 +261,24 @@ export default function SupportChatTab({ userId, userName, isSuperAdmin = false 
       )}
 
       {activeTab === 'faq' && (
-        <FaqManager
-          faqs={faqs}
-          onSaveFaq={faqActions.saveFaq}
-          onUpdateFaq={faqActions.updateFaq}
-          onDeleteFaq={faqActions.deleteFaq}
-        />
+        <>
+          {isSuperAdmin && (
+            <ResponseTimerSettings
+              warningSeconds={responseWarningSeconds}
+              dangerSeconds={responseDangerSeconds}
+              onSaved={(w, d) => {
+                setResponseWarningSeconds(w);
+                setResponseDangerSeconds(d);
+              }}
+            />
+          )}
+          <FaqManager
+            faqs={faqs}
+            onSaveFaq={faqActions.saveFaq}
+            onUpdateFaq={faqActions.updateFaq}
+            onDeleteFaq={faqActions.deleteFaq}
+          />
+        </>
       )}
 
       {activeTab === 'archive' && (
