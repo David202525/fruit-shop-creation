@@ -54,7 +54,10 @@ export default function ChatWindow({
   responseWarningSeconds = 60,
   responseDangerSeconds = 180,
 }: ChatWindowProps) {
-  const lastMsg = messages[messages.length - 1];
+  const sortedByTime = [...messages].sort(
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
+  const lastMsg = sortedByTime[sortedByTime.length - 1];
   const showTimer =
     selectedChat?.status === 'active' &&
     selectedChat?.admin_id === currentUserId &&
