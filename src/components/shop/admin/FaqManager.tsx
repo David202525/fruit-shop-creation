@@ -85,20 +85,21 @@ export default function FaqManager({
                 {editingFaq?.id === faq.id ? (
                   <div className="space-y-2">
                     <Input
-                      value={editingFaq.question}
+                      value={editingFaq.question || ''}
                       onChange={(e) => setEditingFaq({ ...editingFaq, question: e.target.value })}
                     />
                     <Textarea
-                      value={editingFaq.answer}
+                      value={editingFaq.answer || ''}
                       onChange={(e) => setEditingFaq({ ...editingFaq, answer: e.target.value })}
                       rows={3}
                     />
                     <Input
-                      value={editingFaq.keywords.join(', ')}
+                      placeholder="Ключевые слова (через запятую)"
+                      value={Array.isArray(editingFaq.keywords) ? editingFaq.keywords.join(', ') : (editingFaq.keywords || '')}
                       onChange={(e) =>
                         setEditingFaq({
                           ...editingFaq,
-                          keywords: e.target.value.split(',').map((k) => k.trim()),
+                          keywords: e.target.value.split(',').map((k) => k.trim()).filter(Boolean),
                         })
                       }
                     />
@@ -120,7 +121,7 @@ export default function FaqManager({
                       </Badge>
                     </div>
                     <div className="text-sm text-muted-foreground mb-2">{faq.answer}</div>
-                    {faq.keywords.length > 0 && (
+                    {Array.isArray(faq.keywords) && faq.keywords.length > 0 && (
                       <div className="flex gap-1 flex-wrap mb-2">
                         {faq.keywords.map((keyword, idx) => (
                           <Badge key={idx} variant="outline" className="text-xs">
