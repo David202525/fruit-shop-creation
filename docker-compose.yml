@@ -136,6 +136,8 @@ services:
       ADMIN_CODE: ${ADMIN_CODE:-}
     expose:
       - "8000"
+    ports:
+      - "127.0.0.1:8000:8000"
     # HTTPS-метки для Traefik
     labels:
       - "traefik.enable=true"
