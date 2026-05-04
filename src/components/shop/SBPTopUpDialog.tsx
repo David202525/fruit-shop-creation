@@ -51,17 +51,17 @@ const SBPTopUpDialog: React.FC<SBPTopUpDialogProps> = ({ open, onOpenChange, use
     setIsLoading(true);
 
     try {
-      const uniqueId = `${Date.now()}${Math.random().toString(36).slice(2, 8)}`;
+      const uniqueId = Date.now();
+      const safeEmail = userEmail && userEmail.includes('@') ? userEmail : `user${userId}@siberian-florarium.ru`;
       const response = await fetch('https://functions.poehali.dev/60d635ae-584e-4966-b483-528742647efb', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: numAmount,
           user_id: userId,
-          email: userEmail,
-          description: `Пополнение баланса #${uniqueId}`,
-          client_unique_id: uniqueId,
-          return_url: `${window.location.origin}/payment/success?topup=${uniqueId}`
+          email: safeEmail,
+          description: `Пополнение баланса №${uniqueId}`,
+          return_url: `${window.location.origin}/payment/success?topup=1`
         })
       });
 
