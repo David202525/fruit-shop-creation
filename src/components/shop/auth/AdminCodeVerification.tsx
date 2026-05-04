@@ -28,13 +28,13 @@ const AdminCodeVerification = ({ userId, userName, onVerify, onBack, error }: Ad
       <Alert>
         <Icon name="ShieldCheck" size={20} />
         <AlertDescription>
-          Для входа в админ-панель отправлен одноразовый код. Проверьте Telegram.
+          Для входа в админ-панель отправлен одноразовый код. Проверьте почту.
         </AlertDescription>
       </Alert>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label htmlFor="admin-code">Код из Telegram</Label>
+          <Label htmlFor="admin-code">Код из письма</Label>
           <Input
             id="admin-code"
             type="text"

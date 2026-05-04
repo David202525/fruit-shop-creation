@@ -1229,24 +1229,57 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 )
                 conn.commit()
                 
-                telegram_bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
-                telegram_chat_id = os.environ.get('ADMIN_TELEGRAM_CHAT_ID')
-                
-                if telegram_bot_token and telegram_chat_id:
-                    import urllib.request
-                    import urllib.parse
-                    message = f"🔐 *Код для входа в админку*\n\n`{login_code}`\n\n⏱ Действителен 10 минут\n👤 {user[2]}\n📱 {user[1]}"
-                    url = f"https://api.telegram.org/bot{telegram_bot_token}/sendMessage"
-                    data = urllib.parse.urlencode({
-                        'chat_id': telegram_chat_id, 
-                        'text': message,
-                        'parse_mode': 'Markdown'
-                    }).encode()
+                smtp_host = os.environ.get('SMTP_HOST')
+                smtp_port = os.environ.get('SMTP_PORT')
+                smtp_user = os.environ.get('SMTP_USER')
+                smtp_password = os.environ.get('SMTP_PASSWORD')
+                admin_email = os.environ.get('ADMIN_EMAIL')
+
+                if smtp_host and smtp_port and smtp_user and smtp_password and admin_email:
                     try:
-                        req = urllib.request.Request(url, data=data, method='POST')
-                        urllib.request.urlopen(req, timeout=5)
+                        import smtplib
+                        import ssl
+                        from email.mime.text import MIMEText
+                        from email.mime.multipart import MIMEMultipart
+                        from email.utils import formataddr
+                        from email.header import Header
+
+                        subject = 'Код для входа в админку'
+                        html_body = f"""
+                        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; background:#f7f8fa; border-radius:12px;">
+                          <h2 style="color:#222; margin:0 0 12px;">Вход в админ-панель</h2>
+                          <p style="color:#555; margin:0 0 20px;">Одноразовый код для входа:</p>
+                          <div style="font-size:32px; letter-spacing:8px; font-weight:bold; text-align:center; background:#fff; padding:16px; border-radius:8px; border:1px solid #e3e6eb; color:#1a73e8;">{login_code}</div>
+                          <p style="color:#888; font-size:13px; margin:16px 0 0;">⏱ Действителен 10 минут</p>
+                          <p style="color:#888; font-size:13px; margin:6px 0 0;">👤 {user[2]} &nbsp;·&nbsp; 📱 {user[1]}</p>
+                          <p style="color:#aaa; font-size:12px; margin:20px 0 0;">Если это были не вы — проигнорируйте письмо.</p>
+                        </div>
+                        """
+                        text_body = f"Код для входа в админку: {login_code}\nДействителен 10 минут.\n{user[2]} ({user[1]})"
+
+                        msg = MIMEMultipart('alternative')
+                        msg['Subject'] = Header(subject, 'utf-8')
+                        msg['From'] = formataddr((str(Header('Админка', 'utf-8')), smtp_user))
+                        msg['To'] = admin_email
+                        msg.attach(MIMEText(text_body, 'plain', 'utf-8'))
+                        msg.attach(MIMEText(html_body, 'html', 'utf-8'))
+
+                        port_int = int(smtp_port)
+                        context_ssl = ssl.create_default_context()
+                        if port_int == 465:
+                            with smtplib.SMTP_SSL(smtp_host, port_int, context=context_ssl, timeout=10) as server:
+                                server.login(smtp_user, smtp_password)
+                                server.sendmail(smtp_user, [admin_email], msg.as_string())
+                        else:
+                            with smtplib.SMTP(smtp_host, port_int, timeout=10) as server:
+                                server.starttls(context=context_ssl)
+                                server.login(smtp_user, smtp_password)
+                                server.sendmail(smtp_user, [admin_email], msg.as_string())
+                        print(f"Admin login code sent to {admin_email}")
                     except Exception as e:
-                        print(f"Telegram send error: {e}")
+                        print(f"Email send error: {e}")
+                else:
+                    print("SMTP credentials are not configured")
             
             if not user:
                 return {
