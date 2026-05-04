@@ -91,13 +91,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     amount_in_kopecks = int(float(amount) * 100)
     is_preorder = body_data.get('is_preorder_payment', False)
-    
+
+    import time
+    import secrets as _secrets
+    unique_suffix = f"{int(time.time() * 1000)}{_secrets.token_hex(3)}"
+
     if order_id and is_preorder:
-        order_number = f"preorder_{order_id}_{user_id}_{context.request_id[:8]}"
+        order_number = f"preorder_{order_id}_{user_id}_{unique_suffix}"
     elif order_id:
-        order_number = f"order_{order_id}_{user_id}_{context.request_id[:8]}"
+        order_number = f"order_{order_id}_{user_id}_{unique_suffix}"
     else:
-        order_number = f"topup_{user_id}_{context.request_id[:8]}"
+        order_number = f"topup_{user_id}_{unique_suffix}"
     
     payload = {
         'token': api_token,
