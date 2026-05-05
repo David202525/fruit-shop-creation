@@ -20,6 +20,7 @@ const UUID_TO_FUNCTION = {
   '0a62d37c-9fd0-4ff3-9b5b-2c881073d3ac': 'categories',
   '60d635ae-584e-4966-b483-528742647efb': 'alfabank-payment',
   '563d9333-4b51-4637-82a8-c2a66058792a': 'alfabank-webhook',
+  '7a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d': 'alfabank-refund',
   'fc281a64-4d76-4cbd-9ae6-6cf970c14f35': 'notifications',
   'ed127250-fe9d-4c7e-9a93-fb8b7fdc038a': 'loyalty-card',
   '44df414c-694f-4079-aa96-764afeaf23e3': 'upload-image',

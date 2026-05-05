@@ -137,18 +137,27 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             )
                         else:
                             cur.execute(
-                                "UPDATE users SET balance = GREATEST(balance - %s, 0) WHERE id = %s",
-                                (amount, user_id)
+                                "SELECT COALESCE(SUM(ABS(amount)),0) AS r FROM transactions WHERE alfa_order_id = %s AND type = 'refund'",
+                                (alfa_order_id,)
                             )
-                            cur.execute(
-                                "INSERT INTO transactions (user_id, type, amount, description) VALUES (%s, 'refund', %s, 'Возврат средств через Альфа-Банк')",
-                                (user_id, -amount)
-                            )
-                            cur.execute(
-                                "INSERT INTO notifications (user_id, type, title, message) VALUES (%s, 'refund', 'Возврат средств', %s)",
-                                (user_id, f'Возврат пополнения: {amount} ₽')
-                            )
-                            print(f"Balance refund completed: user_id={user_id}, amount={amount}")
+                            already = float(cur.fetchone()['r'] or 0)
+                            if already >= amount:
+                                print(f"Refund already recorded for alfa_order_id={alfa_order_id}, skipping")
+                            else:
+                                to_refund = amount - already
+                                cur.execute(
+                                    "UPDATE users SET balance = GREATEST(balance - %s, 0) WHERE id = %s",
+                                    (to_refund, user_id)
+                                )
+                                cur.execute(
+                                    "INSERT INTO transactions (user_id, type, amount, description, alfa_order_id) VALUES (%s, 'refund', %s, 'Возврат средств через Альфа-Банк', %s)",
+                                    (user_id, -to_refund, alfa_order_id)
+                                )
+                                cur.execute(
+                                    "INSERT INTO notifications (user_id, type, title, message) VALUES (%s, 'refund', 'Возврат средств', %s)",
+                                    (user_id, f'Возврат пополнения: {to_refund} ₽')
+                                )
+                                print(f"Balance refund completed: user_id={user_id}, amount={to_refund}")
                         
                         conn.commit()
                     finally:
@@ -208,13 +217,21 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             )
                         else:
                             cur.execute(
-                                "UPDATE users SET balance = balance + %s WHERE id = %s",
-                                (amount, user_id)
+                                "SELECT id FROM transactions WHERE alfa_order_id = %s AND type = 'deposit' LIMIT 1",
+                                (alfa_order_id,)
                             )
-                            cur.execute(
-                                "INSERT INTO transactions (user_id, type, amount, description) VALUES (%s, 'deposit', %s, 'Пополнение через Альфа-Банк')",
-                                (user_id, amount)
-                            )
+                            existing = cur.fetchone()
+                            if existing:
+                                print(f"Deposit already recorded for alfa_order_id={alfa_order_id}, skipping")
+                            else:
+                                cur.execute(
+                                    "UPDATE users SET balance = balance + %s WHERE id = %s",
+                                    (amount, user_id)
+                                )
+                                cur.execute(
+                                    "INSERT INTO transactions (user_id, type, amount, description, alfa_order_id) VALUES (%s, 'deposit', %s, 'Пополнение через Альфа-Банк', %s)",
+                                    (user_id, amount, alfa_order_id)
+                                )
                         
                         conn.commit()
                     finally:
