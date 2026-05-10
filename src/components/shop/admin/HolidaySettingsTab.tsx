@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { getHolidaySettings, enableHoliday, disableHoliday, toggleCalendar, toggleBanner, setCalendarDays } from '@/utils/holidaySettings';
+import type { HolidayKey } from '@/utils/holidaySettings';
+import { HOLIDAY_LIST } from '@/utils/holidayConfig';
 import CalendarAdmin from '@/components/CalendarAdmin';
 import HolidayCalendar from '@/components/HolidayCalendar';
 import HolidayThemesTab from './HolidayThemesTab';
@@ -9,15 +11,15 @@ import HolidayCalendarsTab from './HolidayCalendarsTab';
 
 const HolidaySettingsTab = () => {
   const [settings, setSettings] = useState(getHolidaySettings());
-  const [showCalendarAdmin, setShowCalendarAdmin] = useState<'feb23' | 'march8' | null>(null);
+  const [showCalendarAdmin, setShowCalendarAdmin] = useState<HolidayKey | null>(null);
   const [activeTab, setActiveTab] = useState<'themes' | 'prizes' | 'calendar'>('themes');
-  const [showCalendarPreview, setShowCalendarPreview] = useState<'feb23' | 'march8' | null>(null);
+  const [showCalendarPreview, setShowCalendarPreview] = useState<HolidayKey | null>(null);
 
   const refreshSettings = () => {
     setSettings(getHolidaySettings());
   };
 
-  const handleEnableHoliday = (holiday: 'feb23' | 'march8') => {
+  const handleEnableHoliday = (holiday: HolidayKey) => {
     enableHoliday(holiday);
     refreshSettings();
   };
@@ -37,7 +39,7 @@ const HolidaySettingsTab = () => {
     refreshSettings();
   };
 
-  const handleSetCalendarDays = (holiday: 'feb23' | 'march8', days: number) => {
+  const handleSetCalendarDays = (holiday: HolidayKey, days: number) => {
     setCalendarDays(holiday, days);
     localStorage.removeItem(`calendar_${holiday}`);
     refreshSettings();
@@ -47,9 +49,10 @@ const HolidaySettingsTab = () => {
     if (!confirm('⚠️ ВНИМАНИЕ! Это действие обнулит календари всех пользователей. Все открытые подарки будут сброшены. Продолжить?')) {
       return;
     }
-    
-    localStorage.removeItem('calendar_feb23');
-    localStorage.removeItem('calendar_march8');
+
+    HOLIDAY_LIST.forEach((meta) => {
+      localStorage.removeItem(`calendar_${meta.key}`);
+    });
     alert('✅ Календари успешно обнулены!');
   };
 

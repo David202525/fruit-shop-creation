@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { getHolidaySettings } from '@/utils/holidaySettings';
+import type { HolidayKey } from '@/utils/holidaySettings';
+import { getHolidayMeta } from '@/utils/holidayConfig';
 
 interface Prize {
   id: string;
@@ -19,7 +21,7 @@ interface CalendarDay {
 }
 
 interface HolidayCalendarProps {
-  holiday: 'feb23' | 'march8';
+  holiday: HolidayKey;
   onClose: () => void;
   testMode?: boolean;
   onPrizeModalChange?: (isOpen: boolean) => void;
@@ -31,32 +33,16 @@ const HolidayCalendar = ({ holiday, onClose, testMode = false, onPrizeModalChang
   const [hasLoyaltyCard, setHasLoyaltyCard] = useState<boolean>(false);
   const [showLoyaltyPrompt, setShowLoyaltyPrompt] = useState(false);
 
-  const holidayConfig = {
-    feb23: {
-      title: 'Календарь к 23 Февраля',
-      emoji: '🎖️',
-      colors: {
-        primary: 'from-blue-600 to-green-600',
-        accent: 'bg-blue-500',
-        text: 'text-blue-900'
-      },
-      startDate: new Date('2026-02-16'),
-      endDate: new Date('2026-02-23')
-    },
-    march8: {
-      title: 'Календарь к 8 Марта',
-      emoji: '🌸',
-      colors: {
-        primary: 'from-pink-500 to-purple-500',
-        accent: 'bg-pink-500',
-        text: 'text-pink-900'
-      },
-      startDate: new Date('2026-03-01'),
-      endDate: new Date('2026-03-08')
+  const meta = getHolidayMeta(holiday);
+  const config = {
+    title: `Календарь · ${meta.name}`,
+    emoji: meta.emoji,
+    colors: {
+      primary: meta.color,
+      accent: meta.accent,
+      text: meta.text
     }
   };
-
-  const config = holidayConfig[holiday];
 
   useEffect(() => {
     const savedCalendar = localStorage.getItem(`calendar_${holiday}`);
@@ -89,7 +75,7 @@ const HolidayCalendar = ({ holiday, onClose, testMode = false, onPrizeModalChang
 
   const getDaysCount = () => {
     const settings = getHolidaySettings();
-    return settings.calendarDays[holiday] || 8;
+    return settings.calendarDays[holiday] || meta.defaultDays || 8;
   };
 
   const getPrizes = (): Prize[] => {

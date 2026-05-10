@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
+import type { HolidayKey } from '@/utils/holidaySettings';
 
 interface Prize {
   id: string;
@@ -12,7 +13,7 @@ interface Prize {
 }
 
 interface CalendarAdminProps {
-  holiday: 'feb23' | 'march8';
+  holiday: HolidayKey;
   onClose: () => void;
 }
 

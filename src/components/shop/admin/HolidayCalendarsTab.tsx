@@ -1,11 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
+import { HOLIDAY_LIST, getHolidayMeta } from '@/utils/holidayConfig';
+import type { HolidayKey } from '@/utils/holidaySettings';
 
 interface HolidayCalendarsTabProps {
   settings: any;
-  onOpenCalendarAdmin: (holiday: 'feb23' | 'march8') => void;
-  onOpenCalendarPreview: (holiday: 'feb23' | 'march8') => void;
+  onOpenCalendarAdmin: (holiday: HolidayKey) => void;
+  onOpenCalendarPreview: (holiday: HolidayKey) => void;
   onResetAllCalendars: () => void;
 }
 
@@ -15,23 +17,10 @@ const HolidayCalendarsTab = ({
   onOpenCalendarPreview,
   onResetAllCalendars
 }: HolidayCalendarsTabProps) => {
-  const holidayConfig = {
-    feb23: {
-      name: '23 Февраля',
-      emoji: '🎖️',
-      color: 'from-blue-600 to-green-600'
-    },
-    march8: {
-      name: '8 Марта',
-      emoji: '🌸',
-      color: 'from-pink-500 to-purple-500'
-    }
-  };
-
-  const getCalendarStats = (holiday: 'feb23' | 'march8') => {
+  const getCalendarStats = (holiday: HolidayKey) => {
     const calendar = localStorage.getItem(`calendar_${holiday}`);
     if (!calendar) return { total: 0, opened: 0 };
-    
+
     const days = JSON.parse(calendar);
     return {
       total: days.length,
@@ -39,9 +28,9 @@ const HolidayCalendarsTab = ({
     };
   };
 
-  const resetCalendar = (holiday: 'feb23' | 'march8') => {
-    const config = holidayConfig[holiday];
-    if (confirm(`Обнулить календарь "${config.name}"? Все открытые подарки будут сброшены.`)) {
+  const resetCalendar = (holiday: HolidayKey) => {
+    const meta = getHolidayMeta(holiday);
+    if (confirm(`Обнулить календарь "${meta.name}"? Все открытые подарки будут сброшены.`)) {
       localStorage.removeItem(`calendar_${holiday}`);
       alert('✅ Календарь обнулен!');
       window.location.reload();
@@ -62,18 +51,18 @@ const HolidayCalendarsTab = ({
       <CardContent className="space-y-6">
         {settings.enabled && settings.activeHoliday && (() => {
           const calendar = localStorage.getItem(`calendar_${settings.activeHoliday}`);
-          const config = holidayConfig[settings.activeHoliday as 'feb23' | 'march8'];
-          
+          const meta = getHolidayMeta(settings.activeHoliday as HolidayKey);
+
           if (!calendar) return null;
-          
+
           const days = JSON.parse(calendar);
-          
+
           return (
             <Card className="border-2 border-primary/20">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="LayoutGrid" size={20} />
-                  Превью календаря: {config.name}
+                  Превью календаря: {meta.name}
                 </CardTitle>
                 <CardDescription>
                   Так видят календарь пользователи
@@ -87,7 +76,7 @@ const HolidayCalendarsTab = ({
                       className={`aspect-square rounded-lg flex items-center justify-center text-lg font-bold transition-all ${
                         day.opened
                           ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white shadow-md'
-                          : `bg-gradient-to-br ${config.color} text-white opacity-80`
+                          : `bg-gradient-to-br ${meta.color} text-white opacity-80`
                       }`}
                     >
                       {day.opened ? (
@@ -104,19 +93,19 @@ const HolidayCalendarsTab = ({
         })()}
 
         <div className="grid md:grid-cols-2 gap-4">
-          {Object.entries(holidayConfig).map(([key, config]) => {
-            const stats = getCalendarStats(key as 'feb23' | 'march8');
+          {HOLIDAY_LIST.map((meta) => {
+            const stats = getCalendarStats(meta.key);
             const progress = stats.total > 0 ? (stats.opened / stats.total) * 100 : 0;
 
             return (
-              <Card key={key} className="border-2">
+              <Card key={meta.key} className="border-2">
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${config.color} flex items-center justify-center text-3xl`}>
-                      {config.emoji}
+                    <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${meta.color} flex items-center justify-center text-3xl`}>
+                      {meta.emoji}
                     </div>
                     <div>
-                      <CardTitle className="text-xl">{config.name}</CardTitle>
+                      <CardTitle className="text-xl">{meta.name}</CardTitle>
                       <CardDescription>Праздничный календарь</CardDescription>
                     </div>
                   </div>
@@ -138,7 +127,7 @@ const HolidayCalendarsTab = ({
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2.5">
                         <div
-                          className={`bg-gradient-to-r ${config.color} h-2.5 rounded-full transition-all`}
+                          className={`bg-gradient-to-r ${meta.color} h-2.5 rounded-full transition-all`}
                           style={{ width: `${progress}%` }}
                         />
                       </div>
@@ -147,15 +136,15 @@ const HolidayCalendarsTab = ({
 
                   <div className="space-y-2">
                     <Button
-                      onClick={() => onOpenCalendarPreview(key as 'feb23' | 'march8')}
-                      className={`w-full bg-gradient-to-r ${config.color} hover:opacity-90 text-white`}
+                      onClick={() => onOpenCalendarPreview(meta.key)}
+                      className={`w-full bg-gradient-to-r ${meta.color} hover:opacity-90 text-white`}
                     >
                       <Icon name="Eye" size={16} className="mr-2" />
                       Открыть как клиент
                     </Button>
                     <div className="flex gap-2">
                       <Button
-                        onClick={() => onOpenCalendarAdmin(key as 'feb23' | 'march8')}
+                        onClick={() => onOpenCalendarAdmin(meta.key)}
                         variant="outline"
                         className="flex-1"
                       >
@@ -163,7 +152,7 @@ const HolidayCalendarsTab = ({
                         Настроить
                       </Button>
                       <Button
-                        onClick={() => resetCalendar(key as 'feb23' | 'march8')}
+                        onClick={() => resetCalendar(meta.key)}
                         variant="outline"
                         className="flex-1 text-orange-600 border-orange-300 hover:bg-orange-50"
                       >

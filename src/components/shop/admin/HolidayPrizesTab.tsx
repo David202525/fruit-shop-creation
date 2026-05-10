@@ -1,25 +1,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
+import { getHolidayMeta } from '@/utils/holidayConfig';
+import type { HolidayKey } from '@/utils/holidaySettings';
 
 interface HolidayPrizesTabProps {
   settings: any;
-  onOpenCalendarAdmin: (holiday: 'feb23' | 'march8') => void;
+  onOpenCalendarAdmin: (holiday: HolidayKey) => void;
 }
 
 const HolidayPrizesTab = ({ settings, onOpenCalendarAdmin }: HolidayPrizesTabProps) => {
-  const holidayConfig = {
-    feb23: {
-      name: '23 Февраля',
-      emoji: '🎖️',
-      color: 'from-blue-600 to-green-600'
-    },
-    march8: {
-      name: '8 Марта',
-      emoji: '🌸',
-      color: 'from-pink-500 to-purple-500'
-    }
-  };
 
   if (!settings.enabled || !settings.activeHoliday) {
     return (
@@ -44,7 +34,7 @@ const HolidayPrizesTab = ({ settings, onOpenCalendarAdmin }: HolidayPrizesTabPro
     );
   }
 
-  const config = holidayConfig[settings.activeHoliday as 'feb23' | 'march8'];
+  const config = getHolidayMeta(settings.activeHoliday as HolidayKey);
 
   return (
     <Card>

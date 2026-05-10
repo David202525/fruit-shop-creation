@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { getHolidaySettings } from '@/utils/holidaySettings';
+import type { HolidayKey } from '@/utils/holidaySettings';
+import { getHolidayMeta } from '@/utils/holidayConfig';
 
 interface HolidayBannerProps {
-  onOpenCalendar: (holiday: 'feb23' | 'march8') => void;
+  onOpenCalendar: (holiday: HolidayKey) => void;
   isPrizeModalOpen?: boolean;
 }
 
@@ -68,29 +70,17 @@ const HolidayBanner = ({ onOpenCalendar, isPrizeModalOpen = false }: HolidayBann
   if (!settings.enabled || !settings.showBanner || !settings.activeHoliday || !isVisible || isPrizeModalOpen) return null;
 
   const activeHoliday = settings.activeHoliday;
+  const meta = getHolidayMeta(activeHoliday);
 
-  const config = {
-    feb23: {
-      gradient: 'from-blue-600 via-green-600 to-blue-600',
-      emoji: '🎖️',
-      title: 'С 23 Февраля!',
-      description: 'Открывайте праздничный календарь и получайте подарки каждый день',
-      buttonText: 'Открыть календарь',
-      particles: ['⭐', '🎯', '🏆', '⚡'],
-      animation: 'military'
-    },
-    march8: {
-      gradient: 'from-pink-500 via-purple-500 to-pink-500',
-      emoji: '🌸',
-      title: 'С 8 Марта!',
-      description: 'Специальные подарки и сюрпризы ждут вас в праздничном календаре',
-      buttonText: 'Получить подарок',
-      particles: ['🌸', '🌺', '🌷', '💐', '🦋', '✨'],
-      animation: 'spring'
-    }
+  const currentConfig = {
+    gradient: meta.gradient,
+    emoji: meta.emoji,
+    title: meta.bannerTitle,
+    description: meta.bannerDescription,
+    buttonText: meta.bannerButton,
+    particles: meta.particles,
+    animation: meta.animation
   };
-
-  const currentConfig = config[activeHoliday];
 
   return (
     <div className="relative overflow-hidden">

@@ -1,9 +1,28 @@
+export type HolidayKey =
+  | 'new_year'
+  | 'christmas'
+  | 'feb14'
+  | 'feb23'
+  | 'march8'
+  | 'maslenitsa'
+  | 'easter'
+  | 'may1'
+  | 'may9'
+  | 'june1'
+  | 'june12'
+  | 'sept1'
+  | 'teachers_day'
+  | 'mothers_day'
+  | 'national_unity'
+  | 'halloween'
+  | 'fathers_day';
+
 export interface HolidaySettings {
   enabled: boolean;
-  activeHoliday: 'feb23' | 'march8' | null;
+  activeHoliday: HolidayKey | null;
   showBanner: boolean;
   calendarEnabled: boolean;
-  calendarDays: {
+  calendarDays: Partial<Record<HolidayKey, number>> & {
     feb23: number;
     march8: number;
   };
@@ -90,7 +109,7 @@ export const saveHolidaySettings = async (settings: HolidaySettings): Promise<vo
   }
 };
 
-export const enableHoliday = async (holiday: 'feb23' | 'march8'): Promise<void> => {
+export const enableHoliday = async (holiday: HolidayKey): Promise<void> => {
   const settings = getHolidaySettings();
   settings.enabled = true;
   settings.activeHoliday = holiday;
@@ -120,7 +139,7 @@ export const toggleBanner = async (enabled: boolean): Promise<void> => {
   await saveHolidaySettings(settings);
 };
 
-export const setCalendarDays = async (holiday: 'feb23' | 'march8', days: number): Promise<void> => {
+export const setCalendarDays = async (holiday: HolidayKey, days: number): Promise<void> => {
   const settings = getHolidaySettings();
   settings.calendarDays[holiday] = days;
   await saveHolidaySettings(settings);

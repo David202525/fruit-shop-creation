@@ -2,16 +2,38 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
+import { HOLIDAY_LIST } from '@/utils/holidayConfig';
+import type { HolidayKey } from '@/utils/holidaySettings';
 
 interface HolidayThemesTabProps {
   settings: any;
-  onEnableHoliday: (holiday: 'feb23' | 'march8') => void;
+  onEnableHoliday: (holiday: HolidayKey) => void;
   onDisableHoliday: () => void;
   onToggleCalendar: (enabled: boolean) => void;
   onToggleBanner: (enabled: boolean) => void;
-  onOpenCalendarAdmin: (holiday: 'feb23' | 'march8') => void;
-  onSetCalendarDays: (holiday: 'feb23' | 'march8', days: number) => void;
+  onOpenCalendarAdmin: (holiday: HolidayKey) => void;
+  onSetCalendarDays: (holiday: HolidayKey, days: number) => void;
 }
+
+const HOLIDAY_DESCRIPTIONS: Partial<Record<HolidayKey, string>> = {
+  new_year: 'Новогодние праздники',
+  christmas: 'Рождество Христово',
+  feb14: 'День святого Валентина',
+  feb23: 'День защитника Отечества',
+  march8: 'Международный женский день',
+  maslenitsa: 'Проводы зимы',
+  easter: 'Светлое Христово Воскресение',
+  may1: 'Праздник весны и труда',
+  may9: 'День Победы',
+  june1: 'День защиты детей',
+  june12: 'День России',
+  sept1: 'День знаний',
+  teachers_day: 'День учителя',
+  mothers_day: 'День матери',
+  fathers_day: 'День отца',
+  national_unity: 'День народного единства',
+  halloween: 'Хэллоуин'
+};
 
 const HolidayThemesTab = ({
   settings,
@@ -22,20 +44,6 @@ const HolidayThemesTab = ({
   onOpenCalendarAdmin,
   onSetCalendarDays
 }: HolidayThemesTabProps) => {
-  const holidayConfig = {
-    feb23: {
-      name: '23 Февраля',
-      emoji: '🎖️',
-      color: 'from-blue-600 to-green-600',
-      description: 'День защитника Отечества'
-    },
-    march8: {
-      name: '8 Марта',
-      emoji: '🌸',
-      color: 'from-pink-500 to-purple-500',
-      description: 'Международный женский день'
-    }
-  };
 
   return (
     <Card>
@@ -55,22 +63,22 @@ const HolidayThemesTab = ({
             Выбрать праздничную тему
           </h3>
           <div className="grid md:grid-cols-2 gap-4">
-            {Object.entries(holidayConfig).map(([key, config]) => {
-              const isActive = settings.enabled && settings.activeHoliday === key;
+            {HOLIDAY_LIST.map((meta) => {
+              const isActive = settings.enabled && settings.activeHoliday === meta.key;
+              const description = HOLIDAY_DESCRIPTIONS[meta.key] || meta.name;
               return (
-                <Card 
-                  key={key} 
-                  className={`transition-all ${isActive ? 'border-4 shadow-xl' : 'border-2 hover:shadow-lg'}`}
-                  style={isActive ? { borderColor: key === 'feb23' ? '#2563eb' : '#ec4899' } : {}}
+                <Card
+                  key={meta.key}
+                  className={`transition-all ${isActive ? 'border-4 shadow-xl border-primary' : 'border-2 hover:shadow-lg'}`}
                 >
                   <CardHeader>
                     <div className="flex items-center gap-4">
-                      <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${config.color} flex items-center justify-center text-5xl shadow-lg ${isActive ? 'animate-pulse' : ''}`}>
-                        {config.emoji}
+                      <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${meta.color} flex items-center justify-center text-5xl shadow-lg ${isActive ? 'animate-pulse' : ''}`}>
+                        {meta.emoji}
                       </div>
                       <div className="flex-1">
                         <CardTitle className="text-2xl flex items-center gap-2">
-                          {config.name}
+                          {meta.name}
                           {isActive && (
                             <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
                               <Icon name="Check" size={12} className="mr-1" />
@@ -78,24 +86,24 @@ const HolidayThemesTab = ({
                             </span>
                           )}
                         </CardTitle>
-                        <CardDescription className="text-base">{config.description}</CardDescription>
+                        <CardDescription className="text-base">{description}</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {!isActive ? (
-                      <Button 
-                        onClick={() => onEnableHoliday(key as 'feb23' | 'march8')} 
-                        className={`w-full bg-gradient-to-r ${config.color} hover:opacity-90 text-white`}
+                      <Button
+                        onClick={() => onEnableHoliday(meta.key)}
+                        className={`w-full bg-gradient-to-r ${meta.color} hover:opacity-90 text-white`}
                         size="lg"
                       >
                         <Icon name="Sparkles" size={18} className="mr-2" />
                         Активировать тему
                       </Button>
                     ) : (
-                      <Button 
-                        onClick={onDisableHoliday} 
-                        variant="outline" 
+                      <Button
+                        onClick={onDisableHoliday}
+                        variant="outline"
                         className="w-full border-2"
                         size="lg"
                       >

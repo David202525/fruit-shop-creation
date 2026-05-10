@@ -13,9 +13,9 @@ import ShareButton from "./components/ShareButton";
 import HolidayBanner from "./components/HolidayBanner";
 import HolidayCalendar from "./components/HolidayCalendar";
 import CalendarAdmin from "./components/CalendarAdmin";
-import HolidayDebugPanel from "./components/HolidayDebugPanel";
 import { useVisitorTracking } from "./hooks/useVisitorTracking";
 import { getHolidaySettings } from "@/utils/holidaySettings";
+import type { HolidayKey } from "@/utils/holidaySettings";
 
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const Terms = lazy(() => import("./pages/Terms"));
@@ -28,8 +28,8 @@ const queryClient = new QueryClient();
 
 const App = () => {
   useVisitorTracking();
-  const [showCalendar, setShowCalendar] = useState<'feb23' | 'march8' | null>(null);
-  const [showCalendarAdmin, setShowCalendarAdmin] = useState<'feb23' | 'march8' | null>(null);
+  const [showCalendar, setShowCalendar] = useState<HolidayKey | null>(null);
+  const [showCalendarAdmin, setShowCalendarAdmin] = useState<HolidayKey | null>(null);
   const [testMode, setTestMode] = useState(false);
   const [isPrizeModalOpen, setIsPrizeModalOpen] = useState(false);
 
@@ -148,7 +148,6 @@ const App = () => {
         <InstallPrompt />
         <SupportChat />
         <ShareButton />
-        <HolidayDebugPanel />
         <HolidayBanner 
           onOpenCalendar={(holiday) => setShowCalendar(holiday)} 
           isPrizeModalOpen={isPrizeModalOpen}
