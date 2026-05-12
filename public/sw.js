@@ -1,6 +1,6 @@
 // Версия кэша инвалидируется при каждом обновлении бэкенд-маршрутизации.
 // Старые версии (включая 'nursery-v4-cors-fix') удаляются хендлером 'activate'.
-const CACHE_NAME = 'nursery-v7-no-cache';
+const CACHE_NAME = 'nursery-v8-no-cache';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
