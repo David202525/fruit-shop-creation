@@ -152,7 +152,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             if action == 'get_all_users':
                 cur.execute("""
-                    SELECT id, phone, full_name, is_admin, is_courier, balance, cashback, avatar, created_at 
+                    SELECT id, phone, full_name, is_admin, is_courier, balance, cashback, avatar, created_at, email 
                     FROM users 
                     ORDER BY created_at DESC
                 """)
@@ -169,7 +169,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'balance': float(user['balance']) if user['balance'] else 0.00,
                         'cashback': float(user['cashback']) if user['cashback'] else 0.00,
                         'avatar': user['avatar'] if user['avatar'] else '👤',
-                        'created_at': user['created_at'].isoformat() if user['created_at'] else None
+                        'created_at': user['created_at'].isoformat() if user['created_at'] else None,
+                        'email': user['email'] if user['email'] else None
                     })
                 
                 return {

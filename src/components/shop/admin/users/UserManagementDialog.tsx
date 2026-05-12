@@ -16,6 +16,7 @@ interface User {
   balance?: number;
   cashback?: number;
   created_at: string;
+  email?: string;
 }
 
 interface Transaction {
