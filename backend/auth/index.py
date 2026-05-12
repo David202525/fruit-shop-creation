@@ -1362,6 +1362,31 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        elif action == 'update_profile':
+            user_id_val = body_data.get('user_id')
+            if not user_id_val:
+                return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'user_id обязателен'}), 'isBase64Encoded': False}
+            full_name_val = body_data.get('full_name', '').strip().replace("'", "''")
+            phone_val = body_data.get('phone', '').strip().replace("'", "''")
+            email_val = body_data.get('email', '').strip().lower().replace("'", "''")
+            new_password_val = body_data.get('new_password', '')
+            updates = []
+            if full_name_val:
+                updates.append(f"full_name = '{full_name_val}'")
+            if phone_val:
+                updates.append(f"phone = '{phone_val}'")
+            if email_val:
+                updates.append(f"email = '{email_val}'")
+            else:
+                updates.append("email = NULL")
+            if new_password_val:
+                hashed = bcrypt.hashpw(new_password_val.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                updates.append(f"password_hash = '{hashed}'")
+            if updates:
+                cur.execute(f"UPDATE users SET {', '.join(updates)} WHERE id = {user_id_val}")
+                conn.commit()
+            return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'success': True}), 'isBase64Encoded': False}
+
         elif action == 'update_email':
             user_id_val = body_data.get('user_id')
             email = body_data.get('email', '').strip().lower()

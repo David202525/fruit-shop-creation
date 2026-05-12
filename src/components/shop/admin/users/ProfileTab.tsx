@@ -94,22 +94,15 @@ const ProfileTab = ({ selectedUser, onCancel, onUpdate }: ProfileTabProps) => {
         requestBody.new_password = newPassword;
       }
 
-      const response = await fetch('https://functions.poehali.dev/4986919b-8daf-4d91-b11a-b3bde148f13f', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/auth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify({ action: 'update_profile', ...requestBody })
       });
 
       const data = await response.json();
 
       if (data.success) {
-        if (email.trim()) {
-          await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/auth`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'update_email', user_id: selectedUser?.id, email: email.trim().toLowerCase() })
-          });
-        }
         const currentUserStr = localStorage.getItem('user');
         if (currentUserStr) {
           const currentUser = JSON.parse(currentUserStr);
