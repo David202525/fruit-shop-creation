@@ -11,6 +11,8 @@ COPY . .
 
 RUN node docker/patch-api-urls.cjs
 
+RUN echo "const CACHE_NAME = 'nursery-v7-no-cache';\nself.addEventListener('install',(e)=>{self.skipWaiting();});\nself.addEventListener('fetch',(e)=>{const u=new URL(e.request.url);if(e.request.method!=='GET')return;if(u.pathname.startsWith('/api/')||u.hostname!==self.location.hostname)return;e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});\nself.addEventListener('activate',(e)=>{e.waitUntil(Promise.all([caches.keys().then((n)=>Promise.all(n.map((x)=>caches.delete(x)))),self.clients.claim()]));" > public/sw.js
+
 RUN npm run build
 
 FROM nginx:alpine
