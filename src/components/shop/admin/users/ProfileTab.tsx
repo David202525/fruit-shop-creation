@@ -15,6 +15,7 @@ interface User {
   balance?: number;
   cashback?: number;
   created_at: string;
+  email?: string;
 }
 
 interface ProfileTabProps {
@@ -26,6 +27,7 @@ interface ProfileTabProps {
 const ProfileTab = ({ selectedUser, onCancel, onUpdate }: ProfileTabProps) => {
   const [fullName, setFullName] = useState(selectedUser?.full_name || '');
   const [phone, setPhone] = useState(selectedUser?.phone || '');
+  const [email, setEmail] = useState(selectedUser?.email || '');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -81,10 +83,11 @@ const ProfileTab = ({ selectedUser, onCancel, onUpdate }: ProfileTabProps) => {
     try {
       setIsLoading(true);
       
-      const requestBody: any = {
+      const requestBody: Record<string, unknown> = {
         user_id: selectedUser?.id,
         full_name: fullName.trim(),
-        phone: phone.trim()
+        phone: phone.trim(),
+        email: email.trim().toLowerCase()
       };
 
       if (newPassword) {
@@ -100,6 +103,13 @@ const ProfileTab = ({ selectedUser, onCancel, onUpdate }: ProfileTabProps) => {
       const data = await response.json();
 
       if (data.success) {
+        if (email.trim()) {
+          await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/auth`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update_email', user_id: selectedUser?.id, email: email.trim().toLowerCase() })
+          });
+        }
         const currentUserStr = localStorage.getItem('user');
         if (currentUserStr) {
           const currentUser = JSON.parse(currentUserStr);
@@ -171,6 +181,17 @@ const ProfileTab = ({ selectedUser, onCancel, onUpdate }: ProfileTabProps) => {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="+7 (XXX) XXX-XX-XX"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="email">Email (для восстановления пароля)</Label>
+        <Input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="example@mail.ru"
         />
       </div>
 
