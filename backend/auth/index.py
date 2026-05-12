@@ -597,7 +597,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     print(f"Phone normalization: raw='{phone_raw}' -> cleaned='{cleaned_phone}' -> formatted='{phone}'")
     
-    if action in ['update_balance', 'update_cashback', 'toggle_admin', 'ban_user', 'unban_user', 'update_avatar', 'update_permissions', 'create_referral_code', 'update_admin_status', 'send_admin_message', 'mark_chat_read']:
+    if action in ['update_balance', 'update_cashback', 'toggle_admin', 'ban_user', 'unban_user', 'update_avatar', 'update_permissions', 'create_referral_code', 'update_admin_status', 'send_admin_message', 'mark_chat_read', 'update_email', 'update_profile']:
         from psycopg2.extras import RealDictCursor
         db_url = os.environ.get('DATABASE_URL')
         conn = psycopg2.connect(db_url)
@@ -1082,6 +1082,51 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
+    if action == 'update_email':
+        from psycopg2.extras import RealDictCursor
+        db_url = os.environ.get('DATABASE_URL')
+        conn = psycopg2.connect(db_url)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        user_id_val = body_data.get('user_id')
+        email_val = body_data.get('email', '').strip().lower().replace("'", "''")
+        if email_val:
+            cur.execute(f"UPDATE users SET email = '{email_val}' WHERE id = {user_id_val}")
+        else:
+            cur.execute(f"UPDATE users SET email = NULL WHERE id = {user_id_val}")
+        conn.commit()
+        cur.close()
+        conn.close()
+        return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'success': True}), 'isBase64Encoded': False}
+
+    if action == 'update_profile':
+        from psycopg2.extras import RealDictCursor
+        db_url = os.environ.get('DATABASE_URL')
+        conn = psycopg2.connect(db_url)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        user_id_val = body_data.get('user_id')
+        full_name_val = body_data.get('full_name', '').strip().replace("'", "''")
+        phone_val = body_data.get('phone', '').strip().replace("'", "''")
+        email_val = body_data.get('email', '').strip().lower().replace("'", "''")
+        new_password_val = body_data.get('new_password', '')
+        updates = []
+        if full_name_val:
+            updates.append(f"full_name = '{full_name_val}'")
+        if phone_val:
+            updates.append(f"phone = '{phone_val}'")
+        if email_val:
+            updates.append(f"email = '{email_val}'")
+        else:
+            updates.append("email = NULL")
+        if new_password_val:
+            hashed = bcrypt.hashpw(new_password_val.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            updates.append(f"password_hash = '{hashed}'")
+        if updates:
+            cur.execute(f"UPDATE users SET {', '.join(updates)} WHERE id = {user_id_val}")
+            conn.commit()
+        cur.close()
+        conn.close()
+        return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'success': True}), 'isBase64Encoded': False}
+
     if not phone or not password:
         return {
             'statusCode': 400,
