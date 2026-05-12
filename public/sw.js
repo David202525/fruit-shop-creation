@@ -1,6 +1,6 @@
 // Версия кэша инвалидируется при каждом обновлении бэкенд-маршрутизации.
 // Старые версии (включая 'nursery-v4-cors-fix') удаляются хендлером 'activate'.
-const CACHE_NAME = 'nursery-v5-local-backend';
+const CACHE_NAME = 'nursery-v6-holiday-fix';
 const urlsToCache = [
   '/',
   '/index.html',
