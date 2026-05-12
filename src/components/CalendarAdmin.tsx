@@ -122,7 +122,7 @@ const CalendarAdmin = ({ holiday, onClose }: CalendarAdminProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-start bg-black/50 backdrop-blur-sm p-4 pl-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 rounded-t-2xl text-white relative">
           <button
