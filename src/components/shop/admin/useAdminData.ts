@@ -46,7 +46,7 @@ export const useAdminData = () => {
 
   const loadUsers = async () => {
     try {
-      const response = await fetch(`${API_AUTH}?action=users`);
+      const response = await fetch(`${API_AUTH}?action=get_all_users`);
       const data = await response.json();
       console.log('Users loaded:', data.users?.length || 0);
       setUsers(data.users || []);
