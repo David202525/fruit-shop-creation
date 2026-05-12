@@ -9,6 +9,8 @@ interface ForgotPasswordFormProps {
   onBack: () => void;
 }
 
+const API_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
 const ForgotPasswordForm = ({ onBack }: ForgotPasswordFormProps) => {
   const [step, setStep] = useState<'request' | 'reset'>('request');
   const [phone, setPhone] = useState('');
@@ -36,21 +38,19 @@ const ForgotPasswordForm = ({ onBack }: ForgotPasswordFormProps) => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://functions.poehali.dev/c7d83bd6-2027-4170-8c35-7f6462c5274a', {
+      const response = await fetch(`${API_URL}/auth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone })
+        body: JSON.stringify({ action: 'forgot_password', phone })
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Ошибка запроса');
-      }
+      const data = await response.json();
+      if (!response.ok || data.error) throw new Error(data.error || 'Ошибка запроса');
 
-      setSuccess('Запрос отправлен администратору. Ожидайте код для сброса пароля.');
+      setSuccess(data.message || 'Код отправлен на вашу почту');
       setStep('reset');
-    } catch (err: any) {
-      setError(err.message || 'Ошибка при отправке запроса');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ошибка при отправке запроса');
     } finally {
       setLoading(false);
     }
@@ -63,23 +63,19 @@ const ForgotPasswordForm = ({ onBack }: ForgotPasswordFormProps) => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://functions.poehali.dev/c7d83bd6-2027-4170-8c35-7f6462c5274a', {
-        method: 'PUT',
+      const response = await fetch(`${API_URL}/auth`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, code, new_password: newPassword })
+        body: JSON.stringify({ action: 'reset_password', phone, code, new_password: newPassword })
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Ошибка сброса пароля');
-      }
+      const data = await response.json();
+      if (!response.ok || data.error) throw new Error(data.error || 'Ошибка сброса пароля');
 
       setSuccess('Пароль успешно изменён! Теперь вы можете войти.');
-      setTimeout(() => {
-        onBack();
-      }, 2000);
-    } catch (err: any) {
-      setError(err.message || 'Ошибка при сбросе пароля');
+      setTimeout(() => onBack(), 2000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ошибка при сбросе пароля');
     } finally {
       setLoading(false);
     }
@@ -111,28 +107,26 @@ const ForgotPasswordForm = ({ onBack }: ForgotPasswordFormProps) => {
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Восстановление пароля</h3>
             <p className="text-sm text-muted-foreground">
-              Укажите номер телефона. Администратор получит запрос и отправит вам код для сброса пароля.
+              Укажите номер телефона. Код для сброса пароля придёт на привязанный email.
             </p>
           </div>
 
           <div>
             <Label htmlFor="forgot-phone">Телефон</Label>
-            <Input 
-              id="forgot-phone" 
-              type="tel" 
+            <Input
+              id="forgot-phone"
+              type="tel"
               placeholder="+7 (999) 123-45-67"
               value={phone}
               onChange={handlePhoneChange}
-              onFocus={(e) => {
-                if (e.target.value === '') e.target.value = '+7';
-              }}
+              onFocus={(e) => { if (e.target.value === '') e.target.value = '+7'; }}
               required
               disabled={loading}
             />
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Отправка...' : 'Отправить запрос'}
+            {loading ? 'Отправка...' : 'Отправить код'}
           </Button>
         </form>
       ) : (
@@ -140,16 +134,16 @@ const ForgotPasswordForm = ({ onBack }: ForgotPasswordFormProps) => {
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Введите код и новый пароль</h3>
             <p className="text-sm text-muted-foreground">
-              Код восстановления будет отправлен вам администратором.
+              Код восстановления отправлен на ваш email. Действителен 15 минут.
             </p>
           </div>
 
           <div>
-            <Label htmlFor="reset-code">Код восстановления</Label>
-            <Input 
-              id="reset-code" 
+            <Label htmlFor="reset-code">Код из письма</Label>
+            <Input
+              id="reset-code"
               type="text"
-              placeholder="Введите код от администратора"
+              placeholder="123456"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               required
@@ -159,8 +153,8 @@ const ForgotPasswordForm = ({ onBack }: ForgotPasswordFormProps) => {
 
           <div>
             <Label htmlFor="new-password">Новый пароль</Label>
-            <Input 
-              id="new-password" 
+            <Input
+              id="new-password"
               type="password"
               placeholder="Введите новый пароль"
               value={newPassword}
@@ -171,7 +165,11 @@ const ForgotPasswordForm = ({ onBack }: ForgotPasswordFormProps) => {
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Сброс...' : 'Изменить пароль'}
+            {loading ? 'Сохранение...' : 'Изменить пароль'}
+          </Button>
+
+          <Button type="button" variant="link" className="w-full text-sm" onClick={() => setStep('request')}>
+            Запросить код повторно
           </Button>
         </form>
       )}

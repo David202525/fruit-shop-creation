@@ -1112,10 +1112,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if action == 'register':
             full_name = body_data.get('full_name', '')
             referral_code = body_data.get('referral_code', '')
+            email = body_data.get('email', '').strip().lower()
             
             phone_escaped = phone.replace("'", "''")
             full_name_escaped = full_name.replace("'", "''")
             referral_code_escaped = referral_code.replace("'", "") if referral_code else ''
+            email_escaped = email.replace("'", "''") if email else ''
             
             cur.execute(f"SELECT id FROM users WHERE phone = '{phone_escaped}'")
             if cur.fetchone():
@@ -1129,13 +1131,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             password_hash_escaped = password_hash.replace("'", "''")
             
+            email_col = ", email" if email_escaped else ""
+            email_val = f", '{email_escaped}'" if email_escaped else ""
+
             if referral_code_escaped:
                 cur.execute(
-                    f"INSERT INTO users (phone, password, full_name, balance, cashback, avatar, referred_by_code) VALUES ('{phone_escaped}', '{password_hash_escaped}', '{full_name_escaped}', 0.00, 0.00, '👤', '{referral_code_escaped}') RETURNING id, phone, full_name, is_admin, balance, cashback, avatar"
+                    f"INSERT INTO users (phone, password, full_name, balance, cashback, avatar, referred_by_code{email_col}) VALUES ('{phone_escaped}', '{password_hash_escaped}', '{full_name_escaped}', 0.00, 0.00, '👤', '{referral_code_escaped}'{email_val}) RETURNING id, phone, full_name, is_admin, balance, cashback, avatar"
                 )
             else:
                 cur.execute(
-                    f"INSERT INTO users (phone, password, full_name, balance, cashback, avatar) VALUES ('{phone_escaped}', '{password_hash_escaped}', '{full_name_escaped}', 0.00, 0.00, '👤') RETURNING id, phone, full_name, is_admin, balance, cashback, avatar"
+                    f"INSERT INTO users (phone, password, full_name, balance, cashback, avatar{email_col}) VALUES ('{phone_escaped}', '{password_hash_escaped}', '{full_name_escaped}', 0.00, 0.00, '👤'{email_val}) RETURNING id, phone, full_name, is_admin, balance, cashback, avatar"
                 )
             conn.commit()
             user = cur.fetchone()
@@ -1355,6 +1360,95 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        elif action == 'forgot_password':
+            import random, string, smtplib, ssl
+            from datetime import datetime, timedelta
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            from email.utils import formataddr
+            from email.header import Header
+
+            phone_escaped = phone.replace("'", "''")
+            cur.execute(f"SELECT id, phone, full_name, email FROM users WHERE phone = '{phone_escaped}'")
+            user_row = cur.fetchone()
+            if not user_row:
+                return {'statusCode': 404, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Пользователь не найден'}), 'isBase64Encoded': False}
+            
+            user_id_val, user_phone, user_name, user_email = user_row
+            if not user_email:
+                return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'У этого аккаунта не привязан email. Обратитесь к администратору.'}), 'isBase64Encoded': False}
+
+            reset_code = ''.join(random.choices(string.digits, k=6))
+            expires_at = datetime.now() + timedelta(minutes=15)
+            cur.execute(f"INSERT INTO password_reset_codes (user_id, phone, email, reset_code, expires_at) VALUES ({user_id_val}, '{phone_escaped}', '{user_email.replace(chr(39), chr(39)*2)}', '{reset_code}', '{expires_at.isoformat()}')")
+            conn.commit()
+
+            smtp_host = os.environ.get('SMTP_HOST')
+            smtp_port = os.environ.get('SMTP_PORT')
+            smtp_user = os.environ.get('SMTP_USER')
+            smtp_password = os.environ.get('SMTP_PASSWORD')
+
+            if smtp_host and smtp_port and smtp_user and smtp_password:
+                html_body = f"""
+                <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; background:#f7f8fa; border-radius:12px;">
+                  <h2 style="color:#222; margin:0 0 12px;">Восстановление пароля</h2>
+                  <p style="color:#555; margin:0 0 20px;">Ваш код для сброса пароля:</p>
+                  <div style="font-size:32px; letter-spacing:8px; font-weight:bold; text-align:center; background:#fff; padding:16px; border-radius:8px; border:1px solid #e3e6eb; color:#1a73e8;">{reset_code}</div>
+                  <p style="color:#888; font-size:13px; margin:16px 0 0;">⏱ Действителен 15 минут</p>
+                  <p style="color:#aaa; font-size:12px; margin:20px 0 0;">Если вы не запрашивали сброс пароля — проигнорируйте письмо.</p>
+                </div>
+                """
+                msg = MIMEMultipart('alternative')
+                msg['Subject'] = Header('Восстановление пароля', 'utf-8')
+                msg['From'] = formataddr((str(Header('Сад мечты', 'utf-8')), smtp_user))
+                msg['To'] = user_email
+                msg.attach(MIMEText(f"Код для сброса пароля: {reset_code}\nДействителен 15 минут.", 'plain', 'utf-8'))
+                msg.attach(MIMEText(html_body, 'html', 'utf-8'))
+                try:
+                    port_int = int(smtp_port)
+                    ctx = ssl.create_default_context()
+                    if port_int == 465:
+                        with smtplib.SMTP_SSL(smtp_host, port_int, context=ctx, timeout=10) as srv:
+                            srv.login(smtp_user, smtp_password)
+                            srv.sendmail(smtp_user, [user_email], msg.as_string())
+                    else:
+                        with smtplib.SMTP(smtp_host, port_int, timeout=10) as srv:
+                            srv.starttls(context=ctx)
+                            srv.login(smtp_user, smtp_password)
+                            srv.sendmail(smtp_user, [user_email], msg.as_string())
+                    print(f"Password reset code sent to {user_email}")
+                except Exception as e:
+                    print(f"Email send error: {e}")
+
+            masked = user_email[:2] + '***@' + user_email.split('@')[-1]
+            return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'success': True, 'message': f'Код отправлен на {masked}'}), 'isBase64Encoded': False}
+
+        elif action == 'reset_password':
+            from datetime import datetime
+            phone_escaped = phone.replace("'", "''")
+            reset_code = body_data.get('code', '').strip()
+            new_password = body_data.get('new_password', '')
+            if not reset_code or not new_password:
+                return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Код и новый пароль обязательны'}), 'isBase64Encoded': False}
+
+            reset_code_escaped = reset_code.replace("'", "''")
+            cur.execute(f"SELECT id, user_id, expires_at, used_at FROM password_reset_codes WHERE phone = '{phone_escaped}' AND reset_code = '{reset_code_escaped}' ORDER BY created_at DESC LIMIT 1")
+            code_row = cur.fetchone()
+            if not code_row:
+                return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Неверный код восстановления'}), 'isBase64Encoded': False}
+            code_id, user_id_val, expires_at, used_at = code_row
+            if used_at:
+                return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Код уже использован'}), 'isBase64Encoded': False}
+            if datetime.now() > expires_at:
+                return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Код истёк, запросите новый'}), 'isBase64Encoded': False}
+
+            new_hash = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            new_hash_escaped = new_hash.replace("'", "''")
+            cur.execute(f"UPDATE users SET password = '{new_hash_escaped}' WHERE id = {user_id_val}")
+            cur.execute(f"UPDATE password_reset_codes SET used_at = NOW() WHERE id = {code_id}")
+            conn.commit()
+            return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'success': True, 'message': 'Пароль успешно изменён'}), 'isBase64Encoded': False}
+
         else:
             return {
                 'statusCode': 400,

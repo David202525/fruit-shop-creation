@@ -97,6 +97,10 @@ const AuthForms = ({ onSubmit, handlePhoneChange, onForgotPassword }: AuthFormsP
             <Input id="register-name" name="full_name" placeholder="Иван Иванов" autoComplete="name" />
           </div>
           <div>
+            <Label htmlFor="register-email">Email <span className="text-muted-foreground text-xs">(необязательно, для восстановления пароля)</span></Label>
+            <Input id="register-email" name="email" type="email" placeholder="example@mail.ru" autoComplete="email" />
+          </div>
+          <div>
             <Label htmlFor="register-password">Пароль</Label>
             <Input id="register-password" name="password" type="password" autoComplete="new-password" required />
           </div>
