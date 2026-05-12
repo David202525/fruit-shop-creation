@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { logUserAction } from '@/utils/userLogger';
 
-const API_LOYALTY = 'https://functions.poehali.dev/87c6f94e-2ca8-4eb7-a7de-a98cec1dd03c';
+const API_LOYALTY = '/api/loyalty-card';
 
 interface LoyaltyCardProps {
   userId: number;
@@ -42,11 +42,7 @@ const LoyaltyCard = ({ userId, userBalance, onBalanceUpdate }: LoyaltyCardProps)
 
   const loadCard = async () => {
     try {
-      const response = await fetch(API_LOYALTY, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'loyalty_get', user_id: userId })
-      });
+      const response = await fetch(`${API_LOYALTY}?user_id=${userId}`);
       const data = await response.json();
       setCard(data.card);
       setCardPrice(data.card_price || 500);
@@ -87,7 +83,7 @@ const LoyaltyCard = ({ userId, userBalance, onBalanceUpdate }: LoyaltyCardProps)
       const response = await fetch(API_LOYALTY, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'loyalty_purchase', user_id: userId, unlock_free: unlockFree })
+        body: JSON.stringify({ user_id: userId, unlock_free: unlockFree })
       });
 
       const data = await response.json();
