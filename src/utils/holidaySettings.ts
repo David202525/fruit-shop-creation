@@ -30,7 +30,7 @@ export interface HolidaySettings {
 
 const STORAGE_KEY = 'holiday_settings';
 const CACHE_KEY = 'holiday_settings_cache';
-const CACHE_DURATION = 10000;
+const CACHE_DURATION = 5 * 60 * 1000;
 const API_URL = 'https://functions.poehali.dev/9b1ac59e-93b6-41de-8974-a7f58d4ffaf9';
 
 export const fetchHolidaySettingsFromAPI = async (): Promise<HolidaySettings> => {
@@ -41,7 +41,7 @@ export const fetchHolidaySettingsFromAPI = async (): Promise<HolidaySettings> =>
     const localRaw = localStorage.getItem(STORAGE_KEY);
     if (localRaw) {
       const local = JSON.parse(localRaw);
-      if (local.enabled && local.activeHoliday && !data.activeHoliday) {
+      if (local.enabled && local.activeHoliday) {
         data.enabled = local.enabled;
         data.activeHoliday = local.activeHoliday;
         data.showBanner = local.showBanner;

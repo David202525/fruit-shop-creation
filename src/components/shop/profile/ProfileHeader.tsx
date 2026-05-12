@@ -11,17 +11,50 @@ import { logUserAction } from '@/utils/userLogger';
 
 interface ProfileHeaderProps {
   user: User | null;
-  siteSettings?: any;
+  siteSettings?: Record<string, unknown>;
   onShowAdminPanel: () => void;
   onUserUpdate: (updatedUser: User) => void;
 }
+
+const API_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const ProfileHeader = ({ user, siteSettings, onShowAdminPanel, onUserUpdate }: ProfileHeaderProps) => {
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [customAvatarUrl, setCustomAvatarUrl] = useState('');
   const [showTopUpDialog, setShowTopUpDialog] = useState(false);
+  const [showEmailEdit, setShowEmailEdit] = useState(false);
+  const [emailInput, setEmailInput] = useState(user?.email || '');
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [emailMsg, setEmailMsg] = useState('');
 
   const avatarEmojis = ['👤', '😊', '😎', '🤓', '🥳', '😇', '🤠', '🧑‍💻', '👨‍💼', '👩‍💼', '🦸', '🦹', '🧙', '🧛', '🧜', '🧚'];
+
+  const handleSaveEmail = async () => {
+    if (!user) return;
+    setEmailLoading(true);
+    setEmailMsg('');
+    try {
+      const response = await fetch(`${API_URL}/auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update_email', user_id: user.id, email: emailInput.trim().toLowerCase() })
+      });
+      const data = await response.json();
+      if (data.success) {
+        const updatedUser = { ...user, email: emailInput.trim().toLowerCase() };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        onUserUpdate(updatedUser);
+        setEmailMsg('Email сохранён');
+        setShowEmailEdit(false);
+      } else {
+        setEmailMsg(data.error || 'Ошибка сохранения');
+      }
+    } catch {
+      setEmailMsg('Ошибка сети');
+    } finally {
+      setEmailLoading(false);
+    }
+  };
 
   const handleUpdateAvatar = async (avatar: string) => {
     if (!user) return;
@@ -116,6 +149,24 @@ const ProfileHeader = ({ user, siteSettings, onShowAdminPanel, onUserUpdate }: P
         )}
         <h3 className="text-lg sm:text-xl font-semibold break-words px-2">{user?.full_name || 'Пользователь'}</h3>
         <p className="text-xs sm:text-sm text-muted-foreground">{user?.phone}</p>
+        <div className="mt-1">
+          {!showEmailEdit ? (
+            <button onClick={() => { setShowEmailEdit(true); setEmailInput(user?.email || ''); setEmailMsg(''); }} className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 mx-auto">
+              <Icon name="Mail" size={12} />
+              {user?.email ? user.email : <span className="underline">Добавить email для восстановления пароля</span>}
+              <Icon name="Pencil" size={11} />
+            </button>
+          ) : (
+            <div className="flex flex-col gap-1 px-2 mt-1">
+              <div className="flex gap-1">
+                <Input type="email" placeholder="example@mail.ru" value={emailInput} onChange={e => setEmailInput(e.target.value)} className="h-7 text-xs" disabled={emailLoading} />
+                <Button size="sm" className="h-7 px-2 text-xs" onClick={handleSaveEmail} disabled={emailLoading}>OK</Button>
+                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setShowEmailEdit(false)}>✕</Button>
+              </div>
+              {emailMsg && <p className="text-xs text-muted-foreground">{emailMsg}</p>}
+            </div>
+          )}
+        </div>
         <Badge variant={user?.is_admin ? 'default' : 'secondary'} className="mt-2">
           {user?.is_admin ? (
             <span className="flex items-center gap-1">

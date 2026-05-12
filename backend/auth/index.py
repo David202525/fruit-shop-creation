@@ -1360,6 +1360,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        elif action == 'update_email':
+            user_id_val = body_data.get('user_id')
+            email = body_data.get('email', '').strip().lower()
+            if not user_id_val:
+                return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'user_id обязателен'}), 'isBase64Encoded': False}
+            email_escaped = email.replace("'", "''") if email else ''
+            if email_escaped:
+                cur.execute(f"UPDATE users SET email = '{email_escaped}' WHERE id = {user_id_val}")
+            else:
+                cur.execute(f"UPDATE users SET email = NULL WHERE id = {user_id_val}")
+            conn.commit()
+            return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'success': True}), 'isBase64Encoded': False}
+
         elif action == 'forgot_password':
             import random, string, smtplib, ssl
             from datetime import datetime, timedelta
