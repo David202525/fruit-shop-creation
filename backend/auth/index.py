@@ -180,7 +180,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             if action == 'user' and user_id:
-                cur.execute(f"SELECT id, phone, full_name, is_admin, is_courier, balance, cashback, avatar FROM users WHERE id = {user_id}")
+                cur.execute(f"SELECT id, phone, full_name, is_admin, is_courier, balance, cashback, avatar, email FROM users WHERE id = {user_id}")
                 user = cur.fetchone()
                 
                 if not user:
@@ -203,7 +203,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'is_courier': user['is_courier'],
                             'balance': float(user['balance']) if user['balance'] else 0.00,
                             'cashback': float(user['cashback']) if user['cashback'] else 0.00,
-                            'avatar': user['avatar'] if user['avatar'] else '👤'
+                            'avatar': user['avatar'] if user['avatar'] else '👤',
+                            'email': user['email'] if user['email'] else None
                         }
                     }, default=str),
                     'isBase64Encoded': False

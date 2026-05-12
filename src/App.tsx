@@ -90,7 +90,8 @@ const App = () => {
       
       try {
         const user = JSON.parse(userData);
-        const response = await fetch('https://functions.poehali.dev/2cc7c24d-08b2-4c44-a9a7-8d09198dbefc', {
+        const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
+        const response = await fetch(`${apiBase}/auth`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'user', user_id: user.id })
