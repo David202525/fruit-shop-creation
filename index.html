@@ -76,7 +76,17 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
 
     <meta name="pp-name" value="fruit-shop-creation">
-    <meta name="app-version" content="3.0.0">
+    <meta name="app-version" content="3.0.1">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let r of registrations) r.unregister();
+        });
+        caches.keys().then(function(names) {
+          for (let name of names) caches.delete(name);
+        });
+      }
+    </script>
   <style>
     #root {
       min-height: 100vh;
