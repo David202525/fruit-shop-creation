@@ -75,7 +75,7 @@ export default function CourierManagement() {
     try {
       const res = await fetch('/api/auth?action=get_all_users');
       const data = await res.json();
-      console.log('Users response:', data);
+
       if (data.users) {
         setAllUsers(data.users);
       }

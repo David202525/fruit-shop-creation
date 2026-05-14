@@ -15,10 +15,10 @@ interface MainContentProps {
   isLoading: boolean;
   currentSection: string;
   products: Product[];
-  categories?: any[];
+  categories?: { id: number; name: string; slug: string }[];
   favorites: Product[];
   favoriteIds: Set<number>;
-  siteSettings: any;
+  siteSettings: Record<string, unknown>;
   isAuthenticated: boolean;
   userId?: number;
   onSectionChange: (section: string) => void;
@@ -44,7 +44,7 @@ const MainContent = ({
   onToggleFavorite,
   onShowAuth
 }: MainContentProps) => {
-  console.log('MainContent render - isLoading:', isLoading, 'products count:', products?.length, 'currentSection:', currentSection);
+
   
   if (currentSection === 'courier') {
     return (

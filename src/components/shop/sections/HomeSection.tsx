@@ -29,7 +29,7 @@ interface HomeSectionProps {
 }
 
 const HomeSection = ({ products, onNavigate, onAddToCart, onViewDetails, favoriteIds, onToggleFavorite, siteSettings, isAuthenticated, userId, onShowAuth }: HomeSectionProps) => {
-  console.log('HomeSection render - products count:', products?.length, 'products:', products);
+
   const showNewYearBanner = siteSettings?.holiday_theme === 'new_year';
   const holidayTheme = siteSettings?.holiday_theme || 'none';
   

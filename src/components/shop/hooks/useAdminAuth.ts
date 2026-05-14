@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 interface AdminAuthParams {
-  setUser: (user: any) => void;
+  setUser: (user: unknown) => void;
   setShowAuthDialog: (value: boolean) => void;
 }
 
@@ -12,14 +12,11 @@ export const useAdminAuth = ({ setUser, setShowAuthDialog }: AdminAuthParams) =>
   const [pendingAdminUser, setPendingAdminUser] = useState<{ id: number; full_name: string } | null>(null);
   const [adminCodeError, setAdminCodeError] = useState('');
 
-  const onAuthSuccess = (userData: any, message: string, requiresCode?: boolean) => {
-    console.log('✅ onAuthSuccess called:', { userData, message, requiresCode });
+  const onAuthSuccess = (userData: { id: number; full_name: string; phone: string }, message: string, requiresCode?: boolean) => {
     if (requiresCode) {
-      console.log('🔐 Setting requiresAdminCode to TRUE');
       setRequiresAdminCode(true);
       setPendingAdminUser({ id: userData.id, full_name: userData.full_name });
       setAdminCodeError('');
-      console.log('📋 State updated:', { requiresAdminCode: true, pendingAdminUser: { id: userData.id, full_name: userData.full_name } });
     } else {
       setShowAuthDialog(false);
       setRequiresAdminCode(false);

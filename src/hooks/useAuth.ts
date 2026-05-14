@@ -90,7 +90,7 @@ export const useAuth = () => {
       const password = formData.get('password');
       const promoCode = action === 'register' ? formData.get('promo_code') : null;
       
-      console.log('Auth attempt:', { action, phone, hasPassword: !!password, hasPromo: !!promoCode });
+
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -113,7 +113,7 @@ export const useAuth = () => {
       clearTimeout(timeoutId);
       
       const data = await response.json();
-      console.log('Auth response:', { status: response.status, data });
+
       
       if (data.banned) {
         setBanInfo({
@@ -136,7 +136,7 @@ export const useAuth = () => {
         } else {
           errorMsg = errorMsg || `Ошибка ${response.status}`;
         }
-        console.error('Auth failed:', errorMsg);
+
         onError(errorMsg);
         return;
       }
@@ -166,7 +166,7 @@ export const useAuth = () => {
         setBanInfo(null);
       } else {
         const errorMsg = data.error || 'Неизвестная ошибка. Проверьте данные';
-        console.error('Auth error:', errorMsg, data);
+
         onError(errorMsg);
       }
     } catch (error) {
@@ -195,7 +195,7 @@ export const useAuth = () => {
     skipAdminCode: boolean = false
   ) => {
     try {
-      console.log('Direct login attempt:', { phone, hasPassword: !!password, skipAdminCode });
+
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -217,7 +217,7 @@ export const useAuth = () => {
       clearTimeout(timeoutId);
       
       const data = await response.json();
-      console.log('Direct login response:', { status: response.status, data });
+
       
       if (data.banned) {
         setBanInfo({
@@ -240,7 +240,7 @@ export const useAuth = () => {
         } else {
           errorMsg = errorMsg || `Ошибка ${response.status}`;
         }
-        console.error('Direct login failed:', errorMsg);
+
         onError(errorMsg);
         return;
       }
