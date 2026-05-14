@@ -46,17 +46,6 @@ export const fetchHolidaySettingsFromAPI = async (): Promise<HolidaySettings> =>
     const response = await fetch(`${API_URL}?holiday_settings=true`);
     const data = await response.json();
 
-    const localRaw = localStorage.getItem(STORAGE_KEY);
-    if (localRaw) {
-      const local = JSON.parse(localRaw);
-      if (local.enabled && local.activeHoliday) {
-        data.enabled = local.enabled;
-        data.activeHoliday = local.activeHoliday;
-        data.showBanner = local.showBanner;
-        data.calendarEnabled = local.calendarEnabled;
-      }
-    }
-    
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     localStorage.setItem(CACHE_KEY, JSON.stringify({
       data,

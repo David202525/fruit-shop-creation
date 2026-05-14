@@ -284,13 +284,13 @@ export default function CourierManagement() {
                 </div>
               ) : filteredUsers.length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">
-                  {searchPhone ? 'Пользователи не найдены' : 'Начните вводить для поиска'}
+                  Пользователи не найдены
                 </p>
               ) : (
                 filteredUsers.map((user) => (
                   <Card key={user.id} className="cursor-pointer hover:bg-accent">
-                    <CardContent className="py-3" onClick={() => {
-                      toggleCourierStatus(user.id, false);
+                    <CardContent className="py-3" onClick={async () => {
+                      await toggleCourierStatus(user.id, false);
                       setShowAddDialog(false);
                       setSearchPhone('');
                     }}>
