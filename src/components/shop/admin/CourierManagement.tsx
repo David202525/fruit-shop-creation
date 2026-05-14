@@ -49,7 +49,7 @@ export default function CourierManagement() {
   const loadCouriers = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch('https://functions.poehali.dev/b35bef37-8423-4939-b43b-0fb565cc8853', {
+      const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'admin_get_couriers' })
@@ -73,7 +73,7 @@ export default function CourierManagement() {
 
   const loadAllUsers = async () => {
     try {
-      const res = await fetch('https://functions.poehali.dev/2cc7c24d-08b2-4c44-a9a7-8d09198dbefc?action=get_all_users');
+      const res = await fetch('/api/auth?action=get_all_users');
       const data = await res.json();
       console.log('Users response:', data);
       if (data.users) {
@@ -91,7 +91,7 @@ export default function CourierManagement() {
 
   const toggleCourierStatus = async (userId: number, currentStatus: boolean) => {
     try {
-      const res = await fetch('https://functions.poehali.dev/b35bef37-8423-4939-b43b-0fb565cc8853', {
+      const res = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -124,7 +124,7 @@ export default function CourierManagement() {
     }
 
     try {
-      const res = await fetch('https://functions.poehali.dev/b35bef37-8423-4939-b43b-0fb565cc8853', {
+      const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

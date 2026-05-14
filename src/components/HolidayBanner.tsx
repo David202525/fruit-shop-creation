@@ -62,10 +62,16 @@ const HolidayBanner = ({ onOpenCalendar, isPrizeModalOpen = false }: HolidayBann
 
   const dismissBanner = () => {
     setIsVisible(false);
-    // Сохраняем время закрытия для конкретного праздника
+    document.body.style.paddingTop = '0px';
     const dismissedKey = `holiday_banner_dismissed_${settings.activeHoliday}`;
     localStorage.setItem(dismissedKey, new Date().toISOString());
   };
+
+  useEffect(() => {
+    const isShowing = settings.enabled && settings.showBanner && settings.activeHoliday && isVisible && !isPrizeModalOpen;
+    document.body.style.paddingTop = isShowing ? '48px' : '0px';
+    return () => { document.body.style.paddingTop = '0px'; };
+  }, [settings.enabled, settings.showBanner, settings.activeHoliday, isVisible, isPrizeModalOpen]);
 
   if (!settings.enabled || !settings.showBanner || !settings.activeHoliday || !isVisible || isPrizeModalOpen) return null;
 
@@ -83,8 +89,8 @@ const HolidayBanner = ({ onOpenCalendar, isPrizeModalOpen = false }: HolidayBann
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 overflow-hidden shadow-2xl">
-      <div className={`relative bg-gradient-to-r ${currentConfig.gradient} text-white py-6 px-4`}>
+    <div className="fixed top-0 left-0 right-0 z-[60] overflow-hidden shadow-2xl">
+      <div className={`relative bg-gradient-to-r ${currentConfig.gradient} text-white py-3 px-4`}>
         <div 
           className="absolute inset-0 opacity-20"
           style={{
@@ -118,32 +124,19 @@ const HolidayBanner = ({ onOpenCalendar, isPrizeModalOpen = false }: HolidayBann
             <Icon name="X" size={20} />
           </button>
 
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-center md:text-left flex-1">
-              <div className="text-6xl mb-3 animate-bounce">{currentConfig.emoji}</div>
-              <h2 className="text-4xl font-bold mb-2 animate-pulse">{currentConfig.title}</h2>
-              <p className="text-lg text-white/90 mb-4">{currentConfig.description}</p>
-              
-              <button
-                onClick={() => onOpenCalendar(activeHoliday)}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-800 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all"
-              >
-                <Icon name="Gift" size={24} />
-                {currentConfig.buttonText}
-              </button>
+          <div className="flex items-center justify-center gap-4">
+            <span className="text-2xl">{currentConfig.emoji}</span>
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              <span className="font-bold text-base sm:text-lg">{currentConfig.title}</span>
+              <span className="text-white/80 text-sm hidden sm:inline">{currentConfig.description}</span>
             </div>
-
-            <div className="hidden md:block">
-              <div className="relative w-64 h-64">
-                <div className="absolute inset-0 bg-white/10 rounded-3xl transform rotate-6 animate-pulse" />
-                <div className="absolute inset-0 bg-white/20 rounded-3xl flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-8xl mb-4">{currentConfig.emoji}</div>
-                    <div className="text-2xl font-bold">Подарки<br/>каждый день!</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <button
+              onClick={() => onOpenCalendar(activeHoliday)}
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-white text-gray-800 rounded-full font-bold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 transition-all whitespace-nowrap"
+            >
+              <Icon name="Gift" size={16} />
+              {currentConfig.buttonText}
+            </button>
           </div>
         </div>
       </div>
