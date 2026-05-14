@@ -220,19 +220,6 @@ export default function SupportChat() {
       );
 
       if (data.status_changed === 'waiting') {
-        if (!isWorkingHours()) {
-          const offHoursMessage: Message = {
-            id: Date.now() + 1,
-            sender_type: 'bot',
-            sender_name: 'Анфиса',
-            message: 'Наши специалисты сейчас отдыхают (работаем с 6:00 до 19:00 МСК). Вы можете написать нам ВКонтакте или позвонить по контактному номеру.',
-            created_at: new Date().toISOString(),
-            is_read: true,
-          };
-          setMessages((prev) => [...prev, offHoursMessage]);
-          setIsLoading(false);
-          return;
-        } else {
           if (data.bot_response) {
             const botMessageId = data.bot_message_id || Date.now();
             const botMessage: Message = {
@@ -252,7 +239,6 @@ export default function SupportChat() {
           }
           setChat((prev) => (prev ? { ...prev, status: 'waiting' } : null));
           setShowFaqs(false);
-        }
       } else if (data.bot_response) {
         const botMessageId = data.bot_message_id || Date.now();
         const botMessage: Message = {
