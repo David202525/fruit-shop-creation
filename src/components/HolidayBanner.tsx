@@ -69,8 +69,8 @@ const HolidayBanner = ({ onOpenCalendar, isPrizeModalOpen = false }: HolidayBann
 
   useEffect(() => {
     const isShowing = settings.enabled && settings.showBanner && settings.activeHoliday && isVisible && !isPrizeModalOpen;
-    document.body.style.paddingTop = isShowing ? '48px' : '0px';
-    return () => { document.body.style.paddingTop = '0px'; };
+    document.documentElement.style.setProperty('--banner-height', isShowing ? '48px' : '0px');
+    return () => { document.documentElement.style.setProperty('--banner-height', '0px'); };
   }, [settings.enabled, settings.showBanner, settings.activeHoliday, isVisible, isPrizeModalOpen]);
 
   if (!settings.enabled || !settings.showBanner || !settings.activeHoliday || !isVisible || isPrizeModalOpen) return null;

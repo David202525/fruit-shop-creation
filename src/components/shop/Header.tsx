@@ -37,7 +37,7 @@ interface HeaderProps {
   onShowAuth: () => void;
   renderCartContent: () => React.ReactNode;
   renderProfileContent: () => React.ReactNode;
-  onNotificationClick?: (notification: any) => void;
+  onNotificationClick?: (notification: unknown) => void;
 }
 
 interface BeforeInstallPromptEvent extends Event {
@@ -91,7 +91,7 @@ const Header = ({
   };
   
   return (
-    <header className="header-height sticky top-0 z-50 bg-background/60 backdrop-blur-xl border-b border-border/40 text-foreground shadow-sm overflow-hidden">
+    <header className="header-height sticky z-50 bg-background/60 backdrop-blur-xl border-b border-border/40 text-foreground shadow-sm overflow-hidden" style={{ top: 'var(--banner-height, 0px)' }}>
       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-green-500/5 to-teal-500/5 pointer-events-none" />
       {isNewYear && <SnowEffect />}
       
@@ -227,7 +227,10 @@ const Header = ({
               </SheetContent>
             </Sheet>
           ) : (
-            <Button variant="secondary" size="sm" onClick={onShowAuth} className="text-xs sm:text-sm px-3 sm:px-4">
+            <Button 
+              onClick={onShowAuth} 
+              className="rounded-full px-5 sm:px-6 py-2 text-sm font-bold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-blue-500/40 hover:scale-105 transition-all border-0"
+            >
               Войти
             </Button>
           )}
