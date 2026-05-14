@@ -41,7 +41,7 @@ interface AdminPanelTabsProps {
   onAddCashback: (userId: number, amount: number, description: string) => void;
   onToggleAdmin: (userId: number, isAdmin: boolean) => void;
   onIssueLoyaltyCard: (userId: number) => Promise<void>;
-  onUpdateOrderStatus: (orderId: number, status: string, rejectionReason?: string) => void;
+  onUpdateOrderStatus: (orderId: number, status: string, rejectionReason?: string, customDeliveryPrice?: number | null, trackingNumber?: string) => void;
   onSaveSettings: (e: React.FormEvent<HTMLFormElement>) => void;
   onDeleteOrder: (orderId: number) => void;
   onUpdateItemStock?: (orderId: number, itemId: number, isOutOfStock: boolean) => void;

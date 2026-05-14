@@ -46,6 +46,7 @@ export interface Order {
   delivery_paid?: boolean;
   cancellation_reason?: string;
   cancelled_by?: string;
+  tracking_number?: string;
   items: Array<{
     product_name: string;
     quantity: number;

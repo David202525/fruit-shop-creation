@@ -108,6 +108,20 @@ const OrderItem = ({ order, isExpanded, onToggle, onCancel, onPayDelivery, onPay
                 </span>
               </div>
             )}
+            {order.tracking_number && (
+              <div className="flex justify-between text-xs sm:text-sm gap-2">
+                <span className="text-muted-foreground flex-shrink-0">Трек-номер:</span>
+                <a
+                  href={`https://www.pochta.ru/tracking#${order.tracking_number}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono font-bold text-primary hover:underline text-right"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {order.tracking_number}
+                </a>
+              </div>
+            )}
           </div>
           
           {order.items && order.items.length > 0 && (

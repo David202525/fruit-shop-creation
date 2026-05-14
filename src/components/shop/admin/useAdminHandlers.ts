@@ -337,7 +337,7 @@ export const useAdminHandlers = (props: UseAdminHandlersProps) => {
     }
   };
 
-  const handleUpdateOrderStatus = async (orderId: number, status: string, rejectionReason?: string, customDeliveryPrice?: number | null) => {
+  const handleUpdateOrderStatus = async (orderId: number, status: string, rejectionReason?: string, customDeliveryPrice?: number | null, trackingNumber?: string) => {
     try {
       const response = await fetch(props.API_ORDERS, {
         method: 'PUT',
@@ -346,7 +346,8 @@ export const useAdminHandlers = (props: UseAdminHandlersProps) => {
           order_id: orderId, 
           status,
           rejection_reason: rejectionReason,
-          custom_delivery_price: customDeliveryPrice
+          custom_delivery_price: customDeliveryPrice,
+          tracking_number: trackingNumber ?? undefined
         })
       });
 
@@ -356,15 +357,15 @@ export const useAdminHandlers = (props: UseAdminHandlersProps) => {
         await logAdminAction(
           props.user.id,
           'order_update',
-          `Обновление статуса заказа #${orderId}: ${status}${rejectionReason ? `. Причина: ${rejectionReason}` : ''}${customDeliveryPrice !== null && customDeliveryPrice !== undefined ? `. Цена доставки: ${customDeliveryPrice}₽` : ''}`,
+          `Обновление статуса заказа #${orderId}: ${status}${rejectionReason ? `. Причина: ${rejectionReason}` : ''}${customDeliveryPrice != null ? `. Цена доставки: ${customDeliveryPrice}₽` : ''}${trackingNumber ? `. Трек: ${trackingNumber}` : ''}`,
           undefined,
           'order',
           orderId,
-          { status, rejection_reason: rejectionReason, custom_delivery_price: customDeliveryPrice }
+          { status, rejection_reason: rejectionReason, custom_delivery_price: customDeliveryPrice, tracking_number: trackingNumber }
         );
         toast({
           title: 'Статус обновлён',
-          description: `Заказ #${orderId} теперь: ${status}${customDeliveryPrice !== null && customDeliveryPrice !== undefined ? `. Доставка: ${customDeliveryPrice}₽` : ''}`
+          description: `Заказ #${orderId} теперь: ${status}${trackingNumber ? `. Трек: ${trackingNumber}` : ''}`
         });
         props.loadOrders();
       }

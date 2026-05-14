@@ -7,8 +7,8 @@ import { OrderDetailsDialog } from './orders/OrderDetailsDialog';
 import { StatusEditDialog } from './orders/StatusEditDialog';
 
 interface OrdersTabProps {
-  orders: any[];
-  onUpdateStatus: (orderId: number, status: string, rejectionReason?: string, customDeliveryPrice?: number | null) => void;
+  orders: Record<string, unknown>[];
+  onUpdateStatus: (orderId: number, status: string, rejectionReason?: string, customDeliveryPrice?: number | null, trackingNumber?: string) => void;
   onDeleteOrder: (orderId: number) => void;
   onUpdateItemStock?: (orderId: number, itemId: number, isOutOfStock: boolean) => void;
   onUpdateItemAvailability?: (itemId: number, availableQuantity: number, availablePrice?: number) => void;
@@ -23,13 +23,14 @@ const statusLabels: Record<string, string> = {
 };
 
 const OrdersTab = ({ orders, onUpdateStatus, onDeleteOrder, onUpdateItemStock, onUpdateItemAvailability }: OrdersTabProps) => {
-  const [editingOrder, setEditingOrder] = useState<any>(null);
-  const [viewingOrder, setViewingOrder] = useState<any>(null);
+  const [editingOrder, setEditingOrder] = useState<Record<string, unknown> | null>(null);
+  const [viewingOrder, setViewingOrder] = useState<Record<string, unknown> | null>(null);
   const [newStatus, setNewStatus] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
   const [itemAvailability, setItemAvailability] = useState<Record<number, { quantity: number; price: string }>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [customDeliveryPrice, setCustomDeliveryPrice] = useState<string>('');
+  const [trackingNumber, setTrackingNumber] = useState<string>('');
 
   const filteredOrders = orders.filter(order =>
     order.user_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -38,29 +39,32 @@ const OrdersTab = ({ orders, onUpdateStatus, onDeleteOrder, onUpdateItemStock, o
     order.delivery_address?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const openStatusDialog = (order: any) => {
+  const openStatusDialog = (order: Record<string, unknown>) => {
     setEditingOrder(order);
-    setNewStatus(order.status);
-    setRejectionReason(order.rejection_reason || '');
-    setCustomDeliveryPrice(order.custom_delivery_price?.toString() || '');
+    setNewStatus(order.status as string);
+    setRejectionReason((order.rejection_reason as string) || '');
+    setCustomDeliveryPrice(order.custom_delivery_price ? String(order.custom_delivery_price) : '');
+    setTrackingNumber((order.tracking_number as string) || '');
   };
 
   const handleSaveStatus = () => {
     if (editingOrder) {
       const deliveryPrice = customDeliveryPrice.trim() ? parseFloat(customDeliveryPrice) : null;
       onUpdateStatus(
-        editingOrder.id, 
+        editingOrder.id as number,
         newStatus, 
         newStatus === 'rejected' ? rejectionReason : undefined,
-        deliveryPrice
+        deliveryPrice,
+        trackingNumber.trim() || undefined
       );
       setEditingOrder(null);
       setRejectionReason('');
       setCustomDeliveryPrice('');
+      setTrackingNumber('');
     }
   };
 
-  const getStatusBadgeVariant = (status: string): any => {
+  const getStatusBadgeVariant = (status: string): string => {
     switch (status) {
       case 'completed': return 'default';
       case 'rejected': return 'destructive';
@@ -132,19 +136,22 @@ const OrdersTab = ({ orders, onUpdateStatus, onDeleteOrder, onUpdateItemStock, o
       />
 
       <StatusEditDialog
-        order={editingOrder}
+        order={editingOrder as { id: number; user_name: string; user_phone: string; delivery_address?: string; delivery_zone_id?: number; custom_delivery_price?: number; delivery_price_set_by_admin?: boolean; delivery_paid?: boolean; tracking_number?: string }}
         newStatus={newStatus}
         rejectionReason={rejectionReason}
         customDeliveryPrice={customDeliveryPrice}
+        trackingNumber={trackingNumber}
         statusLabels={statusLabels}
         onStatusChange={setNewStatus}
         onRejectionReasonChange={setRejectionReason}
         onCustomDeliveryPriceChange={setCustomDeliveryPrice}
+        onTrackingNumberChange={setTrackingNumber}
         onSave={handleSaveStatus}
         onClose={() => {
           setEditingOrder(null);
           setRejectionReason('');
           setCustomDeliveryPrice('');
+          setTrackingNumber('');
         }}
       />
     </>

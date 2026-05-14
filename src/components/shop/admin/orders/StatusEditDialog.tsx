@@ -7,14 +7,16 @@ import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
 interface StatusEditDialogProps {
-  order: any;
+  order: { id: number; user_name: string; user_phone: string; delivery_address?: string; delivery_zone_id?: number; custom_delivery_price?: number; delivery_price_set_by_admin?: boolean; delivery_paid?: boolean; tracking_number?: string };
   newStatus: string;
   rejectionReason: string;
   customDeliveryPrice: string;
+  trackingNumber: string;
   statusLabels: Record<string, string>;
   onStatusChange: (status: string) => void;
   onRejectionReasonChange: (reason: string) => void;
   onCustomDeliveryPriceChange: (price: string) => void;
+  onTrackingNumberChange: (tracking: string) => void;
   onSave: () => void;
   onClose: () => void;
 }
@@ -24,10 +26,12 @@ export const StatusEditDialog = ({
   newStatus,
   rejectionReason,
   customDeliveryPrice,
+  trackingNumber,
   statusLabels,
   onStatusChange,
   onRejectionReasonChange,
   onCustomDeliveryPriceChange,
+  onTrackingNumberChange,
   onSave,
   onClose
 }: StatusEditDialogProps) => {
@@ -113,6 +117,20 @@ export const StatusEditDialog = ({
               </div>
             </div>
           )}
+
+          <div>
+            <Label>Трек-номер отправления</Label>
+            <Input
+              placeholder="Например: RA123456789RU"
+              value={trackingNumber}
+              onChange={(e) => onTrackingNumberChange(e.target.value)}
+            />
+            {order.tracking_number && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Текущий: {order.tracking_number}
+              </p>
+            )}
+          </div>
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={onClose}>
