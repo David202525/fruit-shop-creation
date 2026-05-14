@@ -191,7 +191,7 @@ const Header = ({
             </>
           )}
 
-          <Sheet>
+          {user && <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className={`relative text-primary-foreground hover:bg-primary/90 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 hover:from-yellow-500/30 hover:to-amber-500/30 border-2 border-yellow-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
                 <Icon name="ShoppingCart" size={20} className="sm:w-7 sm:h-7" />
@@ -209,7 +209,7 @@ const Header = ({
               </SheetHeader>
               {renderCartContent()}
             </SheetContent>
-          </Sheet>
+          </Sheet>}
 
           {user ? (
             <Sheet>
