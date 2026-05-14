@@ -32,8 +32,7 @@ const STORAGE_KEY = 'holiday_settings';
 const CACHE_KEY = 'holiday_settings_cache';
 const CACHE_DURATION = 5 * 60 * 1000;
 const ERROR_RETRY_DELAY = 60 * 1000;
-const API_BASE = (import.meta as { env?: { VITE_API_BASE_URL?: string } }).env?.VITE_API_BASE_URL || '/api';
-const API_URL = `${API_BASE}/settings`;
+const API_URL = 'https://functions.poehali.dev/9b1ac59e-93b6-41de-8974-a7f58d4ffaf9';
 
 let isFetching = false;
 let lastErrorTime = 0;
