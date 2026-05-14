@@ -31,10 +31,18 @@ export interface HolidaySettings {
 const STORAGE_KEY = 'holiday_settings';
 const CACHE_KEY = 'holiday_settings_cache';
 const CACHE_DURATION = 5 * 60 * 1000;
+const ERROR_RETRY_DELAY = 60 * 1000;
 const API_BASE = (import.meta as { env?: { VITE_API_BASE_URL?: string } }).env?.VITE_API_BASE_URL || '/api';
 const API_URL = `${API_BASE}/settings`;
 
+let isFetching = false;
+let lastErrorTime = 0;
+
 export const fetchHolidaySettingsFromAPI = async (): Promise<HolidaySettings> => {
+  if (isFetching) return getLocalHolidaySettings();
+  if (Date.now() - lastErrorTime < ERROR_RETRY_DELAY) return getLocalHolidaySettings();
+
+  isFetching = true;
   try {
     const response = await fetch(`${API_URL}?holiday_settings=true`);
     const data = await response.json();
@@ -59,44 +67,50 @@ export const fetchHolidaySettingsFromAPI = async (): Promise<HolidaySettings> =>
     window.dispatchEvent(new CustomEvent('holiday-settings-changed', { detail: data }));
     return data;
   } catch (error) {
-    console.error('Failed to fetch holiday settings:', error);
-    return getHolidaySettings();
+    lastErrorTime = Date.now();
+    return getLocalHolidaySettings();
+  } finally {
+    isFetching = false;
   }
+};
+
+const DEFAULT_SETTINGS: HolidaySettings = {
+  enabled: false,
+  activeHoliday: null,
+  showBanner: false,
+  calendarEnabled: false,
+  calendarDays: { feb23: 8, march8: 8 }
+};
+
+export const getLocalHolidaySettings = (): HolidaySettings => {
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (cached) {
+    try {
+      const { data } = JSON.parse(cached);
+      return data;
+    } catch { /* ignore */ }
+  }
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try {
+      const settings = JSON.parse(stored);
+      if (!settings.calendarDays) settings.calendarDays = { feb23: 8, march8: 8 };
+      return settings;
+    } catch { /* ignore */ }
+  }
+  return DEFAULT_SETTINGS;
 };
 
 export const getHolidaySettings = (): HolidaySettings => {
   const cached = localStorage.getItem(CACHE_KEY);
   if (cached) {
-    const { data, timestamp } = JSON.parse(cached);
-    if (Date.now() - timestamp < CACHE_DURATION) {
-      return data;
-    } else {
-      fetchHolidaySettingsFromAPI();
-    }
+    try {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < CACHE_DURATION) return data;
+    } catch { /* ignore */ }
   }
-
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    const settings = JSON.parse(stored);
-    if (!settings.calendarDays) {
-      settings.calendarDays = { feb23: 8, march8: 8 };
-    }
-    fetchHolidaySettingsFromAPI();
-    return settings;
-  }
-  
   fetchHolidaySettingsFromAPI();
-  
-  return {
-    enabled: false,
-    activeHoliday: null,
-    showBanner: false,
-    calendarEnabled: false,
-    calendarDays: {
-      feb23: 8,
-      march8: 8
-    }
-  };
+  return getLocalHolidaySettings();
 };
 
 export const saveHolidaySettings = async (settings: HolidaySettings): Promise<void> => {
