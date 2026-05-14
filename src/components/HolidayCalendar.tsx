@@ -197,9 +197,14 @@ const HolidayCalendar = ({ holiday, onClose, testMode = false, onPrizeModalChang
 
         <div className="p-6">
           <div className="grid grid-cols-4 md:grid-cols-8 gap-3 mb-6">
-            {calendar.map((dayData) => {
+            {calendar.map((dayData, index) => {
               const available = canOpenDay(dayData.day);
               const opened = dayData.opened;
+              const colsOnMobile = 4;
+              const colInRow = index % colsOnMobile;
+              const isLeftEdge = colInRow === 0;
+              const isRightEdge = colInRow === colsOnMobile - 1;
+              const tooltipAlign = isLeftEdge ? 'left-0 translate-x-0' : isRightEdge ? 'right-0 translate-x-0' : 'left-1/2 -translate-x-1/2';
 
               return (
                 <div key={dayData.day} className="relative group">
@@ -226,7 +231,7 @@ const HolidayCalendar = ({ holiday, onClose, testMode = false, onPrizeModalChang
                   </button>
                   
                   {opened && (
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-xl">
+                    <div className={`absolute bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-xl w-max max-w-[160px] whitespace-normal ${tooltipAlign}`}>
                       <div className="font-semibold mb-1">{dayData.prize.name}</div>
                       <div className="text-gray-300">{dayData.prize.description}</div>
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
@@ -259,7 +264,7 @@ const HolidayCalendar = ({ holiday, onClose, testMode = false, onPrizeModalChang
             
             <div className={`p-6 rounded-xl ${config.colors.accent} bg-opacity-10 mb-6`}>
               <div className="flex justify-center mb-3">
-                <Icon name={selectedDay.prize.icon as any} size={48} className={config.colors.text} />
+                <Icon name={selectedDay.prize.icon} size={48} className={config.colors.text} />
               </div>
               <h4 className="text-xl font-bold mb-2">{selectedDay.prize.name}</h4>
               <p className="text-gray-600">{selectedDay.prize.description}</p>
