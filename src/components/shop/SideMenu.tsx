@@ -33,6 +33,7 @@ interface SideMenuProps {
   };
   user?: User | null;
   onSectionChange: (section: string) => void;
+  onShowAuth?: () => void;
 }
 
 interface BeforeInstallPromptEvent extends Event {
@@ -40,7 +41,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-const SideMenu = ({ siteSettings, user, onSectionChange }: SideMenuProps) => {
+const SideMenu = ({ siteSettings, user, onSectionChange, onShowAuth }: SideMenuProps) => {
   const [open, setOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -117,6 +118,15 @@ const SideMenu = ({ siteSettings, user, onSectionChange }: SideMenuProps) => {
         </SheetHeader>
 
         <div className="space-y-6">
+          {!user && onShowAuth && (
+            <Button
+              onClick={() => { onShowAuth(); setOpen(false); }}
+              className="w-full rounded-full py-3 text-base font-bold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-blue-500/40 transition-all border-0"
+            >
+              Войти
+            </Button>
+          )}
+
           <NavigationMenu onNavigate={handleNavigate} />
 
           <Separator />
