@@ -83,8 +83,8 @@ const HolidayBanner = ({ onOpenCalendar, isPrizeModalOpen = false }: HolidayBann
   };
 
   return (
-    <div className="relative overflow-hidden">
-      <div className={`relative bg-gradient-to-r ${currentConfig.gradient} text-white py-8 px-4`}>
+    <div className="fixed bottom-0 left-0 right-0 z-40 overflow-hidden shadow-2xl">
+      <div className={`relative bg-gradient-to-r ${currentConfig.gradient} text-white py-6 px-4`}>
         <div 
           className="absolute inset-0 opacity-20"
           style={{
