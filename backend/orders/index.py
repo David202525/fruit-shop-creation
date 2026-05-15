@@ -239,9 +239,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
             for item in items:
                 cur.execute("""
-                    INSERT INTO order_items (order_id, product_id, product_name, quantity, price, size)
-                    SELECT %s, p.id, p.name, %s, %s, %s FROM products p WHERE p.id = %s
-                """, (order_id, item.get('quantity', 1), item.get('price', 0), item.get('size'), item.get('product_id')))
+                    INSERT INTO order_items (order_id, product_id, quantity, price)
+                    VALUES (%s, %s, %s, %s)
+                """, (order_id, item.get('product_id'), item.get('quantity', 1), item.get('price', 0)))
                 if item.get('quantity'):
                     cur.execute(
                         "UPDATE products SET stock = GREATEST(COALESCE(stock,0) - %s, 0) WHERE id = %s AND stock IS NOT NULL",
@@ -252,12 +252,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 cur.execute(
                     "UPDATE users SET cashback = COALESCE(cashback,0) + %s WHERE id = %s",
                     (cashback_earned, user_id)
-                )
-
-            if alfabank_order_id:
-                cur.execute(
-                    "UPDATE orders SET alfabank_order_id = %s WHERE id = %s",
-                    (alfabank_order_id, order_id)
                 )
 
             try:
