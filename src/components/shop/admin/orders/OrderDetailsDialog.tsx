@@ -105,6 +105,20 @@ export const OrderDetailsDialog = ({
             </div>
           </div>
 
+          {order.tracking_number && (
+            <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded border border-blue-200 dark:border-blue-800">
+              <div className="font-medium text-blue-700 dark:text-blue-300 mb-1">Трек-номер отправления:</div>
+              <a
+                href={`https://www.pochta.ru/tracking#${order.tracking_number}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono font-bold text-primary hover:underline"
+              >
+                {order.tracking_number}
+              </a>
+            </div>
+          )}
+
           {order.rejection_reason && (
             <div className="bg-destructive/10 p-3 rounded">
               <div className="font-medium text-destructive">Причина отказа:</div>

@@ -136,8 +136,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     set_parts.append('delivery_price_set_by_admin = true')
 
             if tracking_number is not None:
-                set_parts.append('tracking_number = %s')
-                params.append(tracking_number if tracking_number else None)
+                cur.execute("""
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_name = 'orders' AND column_name = 'tracking_number'
+                """)
+                if cur.fetchone():
+                    set_parts.append('tracking_number = %s')
+                    params.append(tracking_number if tracking_number else None)
 
             if not set_parts:
                 return err('Nothing to update')
