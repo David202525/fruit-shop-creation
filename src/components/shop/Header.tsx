@@ -177,7 +177,7 @@ const Header = ({
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className={`relative text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 border-2 border-red-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}
+                className={`relative overflow-visible text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 border-2 border-red-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}
                 onClick={() => onSectionChange('favorites')}
               >
                 <Icon name="Heart" size={18} className="sm:hidden" />
@@ -194,7 +194,7 @@ const Header = ({
 
           {user && <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className={`relative text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 hover:from-yellow-500/30 hover:to-amber-500/30 border-2 border-yellow-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
+              <Button variant="ghost" size="icon" className={`relative overflow-visible text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 hover:from-yellow-500/30 hover:to-amber-500/30 border-2 border-yellow-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
                 <Icon name="ShoppingCart" size={18} className="sm:hidden" />
                 <Icon name="ShoppingCart" size={22} className="hidden sm:block" />
                 {cart.length > 0 && (
