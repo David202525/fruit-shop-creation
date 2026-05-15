@@ -19,23 +19,23 @@ const ProductCardPricing = ({
   onAddVariantToCart 
 }: ProductCardPricingProps) => {
   return (
-    <div className="mt-4">
+    <div className="mt-3 sm:mt-4">
       {hideMainPrice ? (
         <div className="space-y-2">
           <div className="flex flex-col gap-2">
             {product.variants!.map((variant, idx) => (
-              <div key={idx} className="flex items-center justify-between p-2 border rounded-lg hover:border-primary transition-colors">
+              <div key={idx} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-2 border rounded-lg hover:border-primary transition-colors">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">
                     {variant.size}
                   </Badge>
-                  <span className="text-lg font-bold text-primary">{variant.price} ₽</span>
+                  <span className="text-base sm:text-lg font-bold text-primary">{variant.price} ₽</span>
                 </div>
                 <Button 
                   size="sm"
                   variant="ghost"
                   onClick={(e) => onAddVariantToCart(e, variant)}
-                  className="h-8"
+                  className="h-10 w-full sm:w-auto"
                 >
                   <Icon name="ShoppingCart" size={16} className="mr-1" />
                   В корзину
@@ -45,17 +45,17 @@ const ProductCardPricing = ({
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2">
-          <span className="text-2xl font-bold text-primary">{product.price} ₽</span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-lg sm:text-xl md:text-2xl font-bold text-primary">{product.price} ₽</span>
           {showStock && product.stock !== null && product.stock > 0 && (
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs sm:text-sm text-muted-foreground">
               В наличии: {product.stock} шт.
             </span>
           )}
         </div>
       )}
       {hasVariants && !hideMainPrice && (
-        <div className="mt-3 space-y-2">
+        <div className="mt-2 sm:mt-3 space-y-2">
           <p className="text-xs text-muted-foreground font-medium">Доступные варианты:</p>
           <div className="flex flex-wrap gap-1.5">
             {product.variants!.map((variant, idx) => (

@@ -1,3 +1,4 @@
+import React from 'react';
 import Icon from '@/components/ui/icon';
 import { Product, ProductImage } from './types';
 
@@ -21,14 +22,10 @@ const ProductCardImage = ({
   onLogAction 
 }: ProductCardImageProps) => {
   const primaryImageObj = product.images?.find(img => img.is_primary);
-  const imageStyle: React.CSSProperties = {
-    width: primaryImageObj?.width ? `${primaryImageObj.width}px` : '100%',
-    height: primaryImageObj?.height ? `${primaryImageObj.height}px` : '12rem',
-    objectFit: (primaryImageObj?.object_fit as any) || 'cover'
-  };
+  const objectFit = (primaryImageObj?.object_fit as React.CSSProperties['objectFit']) || 'cover';
 
   return (
-    <div className="relative group cursor-pointer" onClick={async () => {
+    <div className="relative group cursor-pointer aspect-[4/3] w-full overflow-hidden" onClick={async () => {
       onViewDetails(product);
       if (userId && isAuthenticated) {
         await onLogAction(
@@ -46,23 +43,23 @@ const ProductCardImage = ({
           <img 
             src={primaryImage} 
             alt={product.name} 
-            style={imageStyle}
-            className="w-full h-48"
+            className="w-full h-full max-w-full"
+            style={{ objectFit }}
           />
           {hasMultipleImages && (
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <div className="text-white text-center">
-                <Icon name="Images" size={32} className="mx-auto mb-2" />
-                <p className="text-sm font-medium">Ещё {product.images!.length - 1} фото</p>
+                <Icon name="Images" size={28} className="mx-auto mb-1 sm:mb-2 sm:size-8" />
+                <p className="text-xs sm:text-sm font-medium">Ещё {product.images!.length - 1} фото</p>
               </div>
             </div>
           )}
         </>
       ) : (
-        <div className="w-full h-48 bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
+        <div className="w-full h-full bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
           <div className="text-center text-gray-400 dark:text-gray-500">
-            <Icon name="ImageOff" size={48} className="mx-auto mb-2" />
-            <p className="text-sm font-medium">Картинка ещё не добавлена</p>
+            <Icon name="ImageOff" size={36} className="mx-auto mb-1 sm:mb-2 sm:size-12" />
+            <p className="text-xs sm:text-sm font-medium">Картинка ещё не добавлена</p>
           </div>
         </div>
       )}

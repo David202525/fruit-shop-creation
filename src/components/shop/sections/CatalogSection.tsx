@@ -97,7 +97,7 @@ const CatalogSection = ({ products, categories = [], onAddToCart, favoriteIds, o
 
   return (
     <div>
-      <h2 className="text-4xl font-display font-bold mb-8">Каталог растений</h2>
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold mb-6 sm:mb-8">Каталог растений</h2>
       
       {/* Debug info - только для админов */}
       {user?.is_admin && (
@@ -115,10 +115,10 @@ const CatalogSection = ({ products, categories = [], onAddToCart, favoriteIds, o
             <Icon name="Search" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Поиск товаров по названию, описанию или категории..."
+              placeholder="Поиск товаров..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-10 py-6 text-lg rounded-full shadow-sm"
+              className="pl-10 pr-10 py-4 sm:py-6 text-sm sm:text-base md:text-lg rounded-full shadow-sm"
             />
             {searchQuery && (
               <button
@@ -130,7 +130,7 @@ const CatalogSection = ({ products, categories = [], onAddToCart, favoriteIds, o
             )}
           </div>
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full md:w-[240px] py-6 rounded-full">
+            <SelectTrigger className="w-full md:w-[240px] py-4 sm:py-6 rounded-full text-sm sm:text-base">
               <div className="flex items-center gap-2">
                 <Icon name="ArrowUpDown" size={18} />
                 <SelectValue placeholder="Сортировка" />
@@ -147,12 +147,12 @@ const CatalogSection = ({ products, categories = [], onAddToCart, favoriteIds, o
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3 mb-8">
+      <div className="flex flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8">
         {categoryFilters.map(category => (
           <button
             key={category.id}
             onClick={() => setActiveCategory(category.id)}
-            className={`px-6 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
+            className={`px-3 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm rounded-full font-medium transition-all flex items-center gap-1.5 sm:gap-2 min-h-[36px] sm:min-h-[40px] ${
               activeCategory === category.id
                 ? 'bg-primary text-primary-foreground shadow-md'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -170,7 +170,7 @@ const CatalogSection = ({ products, categories = [], onAddToCart, favoriteIds, o
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {filteredProducts.map(product => (
           <ProductCard 
             key={product.id} 

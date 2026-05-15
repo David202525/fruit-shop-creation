@@ -32,10 +32,10 @@ export const CitySelector = ({
           type="button"
           variant="outline"
           onClick={() => onOpenChange(true)}
-          className="w-full justify-start"
+          className="w-full justify-start min-h-[44px] text-sm sm:text-base"
         >
-          <Icon name="MapPin" size={16} className="mr-2" />
-          {selectedCity || 'Выберите город доставки'}
+          <Icon name="MapPin" size={16} className="mr-2 flex-shrink-0" />
+          <span className="truncate">{selectedCity || 'Выберите город доставки'}</span>
         </Button>
         {selectedCity && (
           <p className="text-xs text-muted-foreground">
@@ -45,24 +45,26 @@ export const CitySelector = ({
       </div>
 
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-full max-w-full sm:max-w-md h-full sm:h-auto sm:max-h-[85vh] flex flex-col m-0 sm:m-auto rounded-none sm:rounded-lg p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Выберите город</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3 flex-1 min-h-0">
             <Input
               placeholder="Поиск города..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
+              className="min-h-[44px]"
+              autoFocus
             />
-            <ScrollArea className="h-[400px] border rounded-md">
+            <ScrollArea className="flex-1 border rounded-md min-h-0 h-[50vh] sm:h-[400px]">
               <div className="p-2 space-y-1">
                 {filteredCities.length > 0 ? (
                   filteredCities.map((city) => (
                     <Button
                       key={city}
                       variant="ghost"
-                      className="w-full justify-start"
+                      className="w-full justify-start min-h-[44px] text-sm sm:text-base"
                       onClick={() => onCitySelect(city)}
                     >
                       {city}

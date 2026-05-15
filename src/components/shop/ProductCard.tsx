@@ -108,12 +108,12 @@ const ProductCard = ({ product, onAddToCart, onViewDetails, isFavorite = false, 
           onLogAction={logUserAction}
         />
       </div>
-      <CardHeader>
-        <CardTitle className="font-display">{product.name}</CardTitle>
-        <CardDescription>{product.category_name}</CardDescription>
+      <CardHeader className="px-3 pt-3 pb-1 sm:px-6 sm:pt-6 sm:pb-2">
+        <CardTitle className="font-display text-sm sm:text-base md:text-lg leading-tight line-clamp-2">{product.name}</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">{product.category_name}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
+      <CardContent className="px-3 pb-1 sm:px-6 sm:pb-2">
+        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{product.description}</p>
         <ProductCardPricing
           product={product}
           hideMainPrice={hideMainPrice}

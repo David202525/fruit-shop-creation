@@ -171,12 +171,12 @@ const CartContent = ({
   const isCashPaymentAvailable = selectedCity === 'Барнаул';
 
   return (
-    <div className="mt-6 space-y-4">
+    <div className="mt-4 sm:mt-6 space-y-4">
       {!user ? (
         <div className="text-center py-8 space-y-4">
           <Icon name="ShoppingCart" size={48} className="mx-auto text-muted-foreground" />
           <p className="text-muted-foreground">Войдите, чтобы оформить заказ</p>
-          <Button onClick={() => window.location.reload()} className="mx-auto">
+          <Button onClick={() => window.location.reload()} className="mx-auto min-h-[44px]">
             <Icon name="LogIn" size={18} className="mr-2" />
             Войти для покупки
           </Button>
@@ -185,7 +185,9 @@ const CartContent = ({
         <p className="text-center text-muted-foreground py-8">Корзина пуста</p>
       ) : (
         <>
-          <CartItemsList cart={cart} updateCartQuantity={updateCartQuantity} />
+          <div className="space-y-3">
+            <CartItemsList cart={cart} updateCartQuantity={updateCartQuantity} />
+          </div>
           
           <Separator />
           
@@ -199,7 +201,7 @@ const CartContent = ({
           
           <div className="space-y-3 bg-muted/30 p-3 rounded-lg">
             <h4 className="font-semibold text-sm flex items-center gap-2">
-              <Icon name="MapPin" size={16} />
+              <Icon name="MapPin" size={16} className="flex-shrink-0" />
               Город и способ получения
             </h4>
             
@@ -241,7 +243,7 @@ const CartContent = ({
           
           <div className="space-y-3 bg-muted/30 p-3 rounded-lg">
             <h4 className="font-semibold text-sm flex items-center gap-2">
-              <Icon name="CreditCard" size={16} />
+              <Icon name="CreditCard" size={16} className="flex-shrink-0" />
               Способ оплаты
             </h4>
             

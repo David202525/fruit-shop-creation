@@ -129,7 +129,7 @@ const AdminPanelTabs = ({
         <Icon name={isSidebarOpen ? "X" : "Menu"} size={24} />
       </Button>
 
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="flex gap-4 relative">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="flex gap-0 lg:gap-4 relative w-full">
         {/* Overlay for mobile */}
         {isSidebarOpen && (
           <div 
@@ -143,6 +143,7 @@ const AdminPanelTabs = ({
           flex flex-col w-64 h-fit gap-1 p-2 
           fixed lg:sticky top-0 lg:top-4 left-0 bottom-0 lg:bottom-auto
           bg-background z-50 lg:z-auto
+          border-r border-border shadow-xl lg:shadow-none
           transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           overflow-y-auto

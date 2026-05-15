@@ -42,10 +42,10 @@ export const StatusEditDialog = ({
 
   return (
     <Dialog open={!!order} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="w-full max-w-full sm:max-w-md p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle>Изменить статус заказа #{order.id}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-base sm:text-lg leading-snug">Изменить статус заказа #{order.id}</DialogTitle>
+          <DialogDescription className="break-words">
             Клиент: {order.user_name} ({order.user_phone})
           </DialogDescription>
         </DialogHeader>
@@ -132,11 +132,11 @@ export const StatusEditDialog = ({
             )}
           </div>
 
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+            <Button variant="outline" onClick={onClose} className="w-full sm:w-auto min-h-[44px]">
               Отмена
             </Button>
-            <Button onClick={onSave}>
+            <Button onClick={onSave} className="w-full sm:w-auto min-h-[44px]">
               Сохранить
             </Button>
           </div>

@@ -182,11 +182,11 @@ const HomeSection = ({ products, onNavigate, onAddToCart, onViewDetails, favorit
 
       {/* Секция товаров - доступна всем */}
       <section className="bg-gradient-to-b from-transparent via-primary/5 to-transparent py-12 -mx-4 px-4 rounded-3xl">
-        <div className="text-center mb-12">
-          <h3 className="text-3xl md:text-4xl font-display font-bold mb-3 text-primary">Популярные товары</h3>
-          <p className="text-muted-foreground">Выбор наших покупателей</p>
+        <div className="text-center mb-8 sm:mb-12">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold mb-3 text-primary">Популярные товары</h3>
+          <p className="text-sm sm:text-base text-muted-foreground">Выбор наших покупателей</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {sortedProducts.slice(0, 6).map(product => (
             <ProductCard 
               key={product.id} 

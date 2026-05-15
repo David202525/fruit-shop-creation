@@ -147,12 +147,13 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ userId, onNotificat
           <Button
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-primary/90 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border-2 border-blue-200/30 backdrop-blur-sm transition-all hover:scale-110"
+            className="text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border-2 border-blue-200/30 backdrop-blur-sm transition-all hover:scale-110"
           >
-            <Icon name="Bell" size={20} className="sm:w-7 sm:h-7" />
+            <Icon name="Bell" size={18} className="sm:hidden" />
+            <Icon name="Bell" size={22} className="hidden sm:block" />
           </Button>
           {unreadCount > 0 && (
-            <Badge className="absolute -top-1 -right-1 min-w-[24px] h-[24px] sm:min-w-[28px] sm:h-[28px] px-2 text-xs sm:text-sm rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold shadow-lg animate-pulse leading-none pointer-events-none z-10">
+            <Badge className="absolute -top-1 -right-1 min-w-[20px] h-[20px] sm:min-w-[22px] sm:h-[22px] px-1 text-[10px] sm:text-[11px] rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold shadow-lg animate-pulse leading-none pointer-events-none z-10">
               {unreadCount}
             </Badge>
           )}

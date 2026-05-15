@@ -22,19 +22,25 @@ export const OrderCard = ({
 }: OrderCardProps) => {
   return (
     <div className="p-3 sm:p-4 border rounded-lg space-y-3">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-        <div className="flex-1">
-          <div className="font-medium text-sm sm:text-base">Заказ #{order.id}</div>
-          <div className="text-xs sm:text-sm text-muted-foreground">
-            {order.user_name} ({order.user_phone})
+      <div className="flex flex-col gap-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm sm:text-base">Заказ #{order.id}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground truncate">
+              {order.user_name}
+            </div>
+            <div className="text-xs text-muted-foreground truncate">
+              {order.user_phone}
+            </div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              {formatDateTime(order.created_at)}
+            </div>
           </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            {formatDateTime(order.created_at)}
-          </div>
-        </div>
-        <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:text-right">
-          <div className="space-y-1">
-            <div className={`font-bold text-base sm:text-lg ${order.is_preorder ? 'line-through text-muted-foreground text-sm' : ''}`}>
+          <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+            <Badge variant={getStatusBadgeVariant(order.status)} className="text-xs whitespace-nowrap">
+              {statusLabels[order.status] || order.status}
+            </Badge>
+            <div className={`font-bold text-sm sm:text-base whitespace-nowrap ${order.is_preorder ? 'line-through text-muted-foreground' : ''}`}>
               {order.items ? 
                 order.items
                   .filter((i: any) => i.product_name)
@@ -58,14 +64,11 @@ export const OrderCard = ({
                 Полностью
               </div>
             ) : order.is_preorder && order.amount_paid ? (
-              <div className="text-blue-700 dark:text-blue-300 font-bold text-sm">
+              <div className="text-blue-700 dark:text-blue-300 font-bold text-xs whitespace-nowrap">
                 Оплачено: {parseFloat(order.amount_paid).toFixed(2)}₽
               </div>
             ) : null}
           </div>
-          <Badge variant={getStatusBadgeVariant(order.status)} className="text-xs">
-            {statusLabels[order.status] || order.status}
-          </Badge>
         </div>
       </div>
 
@@ -171,16 +174,31 @@ export const OrderCard = ({
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Button onClick={() => onViewDetails(order)} variant="outline" size="sm">
-          <Icon name="Eye" size={16} className="mr-1" />
+        <Button
+          onClick={() => onViewDetails(order)}
+          variant="outline"
+          size="sm"
+          className="min-h-[36px] flex-1 sm:flex-none"
+        >
+          <Icon name="Eye" size={16} className="mr-1 flex-shrink-0" />
           Детали
         </Button>
-        <Button onClick={() => onEditStatus(order)} variant="outline" size="sm">
-          <Icon name="Edit" size={16} className="mr-1" />
-          Изменить статус
+        <Button
+          onClick={() => onEditStatus(order)}
+          variant="outline"
+          size="sm"
+          className="min-h-[36px] flex-1 sm:flex-none"
+        >
+          <Icon name="Edit" size={16} className="mr-1 flex-shrink-0" />
+          <span className="hidden xs:inline">Изменить </span>статус
         </Button>
-        <Button onClick={() => onDelete(order.id)} variant="destructive" size="sm">
-          <Icon name="Trash2" size={16} className="mr-1" />
+        <Button
+          onClick={() => onDelete(order.id)}
+          variant="destructive"
+          size="sm"
+          className="min-h-[36px] flex-1 sm:flex-none"
+        >
+          <Icon name="Trash2" size={16} className="mr-1 flex-shrink-0" />
           Удалить
         </Button>
       </div>

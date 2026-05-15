@@ -52,17 +52,17 @@ export const DeliveryOptions = ({
   return (
     <RadioGroup value={deliveryType} onValueChange={onDeliveryTypeChange}>
       {pickupEnabled && (
-        <div className="flex items-start space-x-2 p-3 rounded-lg border-2 border-primary/20 bg-background hover:bg-primary/5 transition-colors">
-          <RadioGroupItem value="pickup" id="pickup" className="mt-0.5" />
+        <div className="flex items-center space-x-3 p-3 min-h-[56px] rounded-lg border-2 border-primary/20 bg-background hover:bg-primary/5 transition-colors">
+          <RadioGroupItem value="pickup" id="pickup" className="w-5 h-5 flex-shrink-0" />
           <Label htmlFor="pickup" className="flex-1 cursor-pointer">
             <div className="flex items-start gap-2">
               <Icon name="Store" size={18} className="text-primary mt-0.5 flex-shrink-0" />
-              <div className="flex-1">
-                <p className="font-semibold">Самовывоз</p>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm sm:text-base">Самовывоз</p>
                 {pickupAddress && (
-                  <p className="text-xs text-muted-foreground mt-1">{pickupAddress}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5 break-words">{pickupAddress}</p>
                 )}
-                <p className="text-sm font-medium text-green-600 mt-1">Бесплатно</p>
+                <p className="text-xs sm:text-sm font-medium text-green-600 mt-0.5">Бесплатно</p>
               </div>
             </div>
           </Label>
@@ -71,20 +71,20 @@ export const DeliveryOptions = ({
       
       {deliveryEnabled && (
         <div className="space-y-2">
-          <div className="flex items-start space-x-2 p-3 rounded-lg border-2 border-primary/20 bg-background hover:bg-primary/5 transition-colors">
-            <RadioGroupItem value="delivery" id="delivery" className="mt-0.5" />
+          <div className="flex items-center space-x-3 p-3 min-h-[56px] rounded-lg border-2 border-primary/20 bg-background hover:bg-primary/5 transition-colors">
+            <RadioGroupItem value="delivery" id="delivery" className="w-5 h-5 flex-shrink-0" />
             <Label htmlFor="delivery" className="flex-1 cursor-pointer">
               <div className="flex items-start gap-2">
                 <Icon name="Truck" size={18} className="text-primary mt-0.5 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="font-semibold">Доставка</p>
-                  <p className="text-xs text-muted-foreground mt-1">Доставим по указанному адресу</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm sm:text-base">Доставка</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Доставим по указанному адресу</p>
                   {selectedCity === 'Барнаул' ? (
-                    <p className="text-sm font-medium text-primary mt-1">
+                    <p className="text-xs sm:text-sm font-medium text-primary mt-0.5">
                       {getDeliveryFee() > 0 ? `${getDeliveryFee()} ₽` : 'Бесплатно'}
                     </p>
                   ) : (
-                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
                       Стоимость рассчитает администратор
                     </p>
                   )}
@@ -94,7 +94,7 @@ export const DeliveryOptions = ({
           </div>
           
           {deliveryType === 'delivery' && (
-            <div className="pl-9 space-y-3">
+            <div className="pl-8 sm:pl-9 space-y-3">
               {deliveryZones.length > 0 && (
                 <div>
                   <Label htmlFor="delivery-zone" className="text-xs text-muted-foreground">

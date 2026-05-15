@@ -15,14 +15,14 @@ const ProductCardFooter = ({
   onAddToCartClick 
 }: ProductCardFooterProps) => {
   return (
-    <CardFooter className="flex gap-2 pt-4">
+    <CardFooter className="flex gap-2 pt-3 sm:pt-4 px-3 sm:px-6">
       {!hideMainPrice && (
         <Button 
-          className="flex-1" 
+          className="flex-1 w-full min-h-[44px] text-sm sm:text-base" 
           onClick={onAddToCartClick}
           disabled={product.stock !== null && product.stock <= 0}
         >
-          <Icon name="ShoppingCart" size={18} className="mr-2" />
+          <Icon name="ShoppingCart" size={16} className="mr-1.5 sm:mr-2 flex-shrink-0" />
           {product.stock !== null && product.stock <= 0 ? 'Нет в наличии' : 'В корзину'}
         </Button>
       )}

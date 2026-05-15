@@ -71,10 +71,10 @@ const FavoritesSection = ({ favorites, onAddToCart, favoriteIds, onToggleFavorit
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <Icon name="Heart" size={32} className="text-red-500" />
-          <h2 className="text-4xl font-display font-bold">Избранное</h2>
+      <div className="flex items-center justify-between mb-6 sm:mb-8">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Icon name="Heart" size={24} className="text-red-500 sm:size-8 flex-shrink-0" />
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold">Избранное</h2>
         </div>
         {onClose && (
           <button
@@ -96,7 +96,7 @@ const FavoritesSection = ({ favorites, onAddToCart, favoriteIds, onToggleFavorit
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {favorites.map(fav => {
             const product = convertToProduct(fav);
             return (

@@ -97,13 +97,13 @@ const Header = ({
       
       {isNewYear && (
         <>
-          <div className="absolute top-2 right-8 sm:right-16 md:right-24 lg:right-32 flex gap-3 opacity-90 animate-pulse">
+          <div className="absolute top-2 right-8 sm:right-16 md:right-24 lg:right-32 hidden sm:flex gap-3 opacity-90 animate-pulse">
             <div className="text-4xl sm:text-5xl" style={{ animation: 'swing 3s ease-in-out infinite' }}>🎄</div>
             <div className="text-3xl sm:text-4xl" style={{ animation: 'swing 3s ease-in-out 0.5s infinite' }}>✨</div>
             <div className="text-2xl sm:text-3xl" style={{ animation: 'swing 3s ease-in-out 1s infinite' }}>🎁</div>
           </div>
           
-          <div className="absolute top-1 left-1/4 flex gap-2 opacity-60">
+          <div className="absolute top-1 left-1/4 hidden sm:flex gap-2 opacity-60">
             <div className="text-xl">❄️</div>
             <div className="text-xl" style={{ animation: 'twinkle 2s ease-in-out infinite' }}>⛄</div>
           </div>
@@ -121,18 +121,18 @@ const Header = ({
         </>
       )}
       
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between relative z-10">
-        <div className="flex items-center gap-2 sm:gap-3 flex-shrink min-w-0">
+      <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between relative z-10 min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink min-w-0 overflow-hidden">
           <SideMenu siteSettings={siteSettings} user={user} onSectionChange={onSectionChange} onShowAuth={onShowAuth} />
           <button 
             onClick={() => onSectionChange('home')} 
-            className="flex items-center gap-2 hover:opacity-90 transition min-w-0 flex-shrink"
+            className="flex items-center gap-1.5 sm:gap-2 hover:opacity-90 transition min-w-0 flex-shrink overflow-hidden"
           >
             {siteSettings?.logo_url && siteSettings.logo_url.startsWith('http') && (
               <img 
                 src={siteSettings.logo_url} 
                 alt={`Логотип ${siteSettings?.site_name || 'Питомник растений'}`}
-                className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 rounded-full object-cover border-2 border-white/20 shadow-lg flex-shrink-0"
+                className="h-9 w-9 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full object-cover border-2 border-white/20 shadow-lg flex-shrink-0"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
@@ -140,7 +140,7 @@ const Header = ({
             )}
             <LeafyTitle 
               text={siteSettings?.site_name || 'Питомник растений'} 
-              className="text-xs sm:text-base md:text-2xl max-w-[100px] sm:max-w-[200px] md:max-w-none"
+              className="text-xs sm:text-base md:text-xl truncate max-w-[110px] sm:max-w-[180px] md:max-w-none"
             />
           </button>
         </div>
@@ -177,12 +177,13 @@ const Header = ({
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className={`relative text-primary-foreground hover:bg-primary/90 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 border-2 border-red-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}
+                className={`relative text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 border-2 border-red-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}
                 onClick={() => onSectionChange('favorites')}
               >
-                <Icon name="Heart" size={20} className="sm:w-7 sm:h-7" />
+                <Icon name="Heart" size={18} className="sm:hidden" />
+                <Icon name="Heart" size={22} className="hidden sm:block" />
                 {favoritesCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 min-w-[22px] h-[22px] sm:min-w-[26px] sm:h-[26px] px-1.5 text-[11px] sm:text-xs rounded-full flex items-center justify-center bg-gradient-to-br from-red-500 to-red-600 text-white font-bold shadow-lg animate-pulse">
+                  <Badge className="absolute -top-1 -right-1 min-w-[20px] h-[20px] sm:min-w-[22px] sm:h-[22px] px-1 text-[10px] sm:text-[11px] rounded-full flex items-center justify-center bg-gradient-to-br from-red-500 to-red-600 text-white font-bold shadow-lg animate-pulse">
                     {favoritesCount}
                   </Badge>
                 )}
@@ -193,17 +194,18 @@ const Header = ({
 
           {user && <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className={`relative text-primary-foreground hover:bg-primary/90 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 hover:from-yellow-500/30 hover:to-amber-500/30 border-2 border-yellow-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
-                <Icon name="ShoppingCart" size={20} className="sm:w-7 sm:h-7" />
+              <Button variant="ghost" size="icon" className={`relative text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 hover:from-yellow-500/30 hover:to-amber-500/30 border-2 border-yellow-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
+                <Icon name="ShoppingCart" size={18} className="sm:hidden" />
+                <Icon name="ShoppingCart" size={22} className="hidden sm:block" />
                 {cart.length > 0 && (
-                  <Badge className="absolute -top-1 -right-1 min-w-[22px] h-[22px] sm:min-w-[26px] sm:h-[26px] px-1.5 text-[11px] sm:text-xs rounded-full flex items-center justify-center bg-gradient-to-br from-yellow-500 to-amber-600 text-white font-bold shadow-lg animate-pulse">
+                  <Badge className="absolute -top-1 -right-1 min-w-[20px] h-[20px] sm:min-w-[22px] sm:h-[22px] px-1 text-[10px] sm:text-[11px] rounded-full flex items-center justify-center bg-gradient-to-br from-yellow-500 to-amber-600 text-white font-bold shadow-lg animate-pulse">
                     {cart.length}
                   </Badge>
                 )}
                 {isNewYear && <div className="icon-snow-sparkle">✨</div>}
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+            <SheetContent className="w-full sm:max-w-lg overflow-y-auto p-4 sm:p-6">
               <SheetHeader>
                 <SheetTitle>Корзина</SheetTitle>
               </SheetHeader>
@@ -214,12 +216,13 @@ const Header = ({
           {user ? (
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className={`relative text-primary-foreground hover:bg-primary/90 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 border-2 border-blue-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
-                  <Icon name="User" size={20} className="sm:w-7 sm:h-7" />
+                <Button variant="ghost" size="icon" className={`relative text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 border-2 border-blue-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
+                  <Icon name="User" size={18} className="sm:hidden" />
+                  <Icon name="User" size={22} className="hidden sm:block" />
                   {isNewYear && <div className="icon-snow-sparkle">🎅</div>}
                 </Button>
               </SheetTrigger>
-              <SheetContent className="overflow-y-auto">
+              <SheetContent className="w-full sm:max-w-lg overflow-y-auto p-4 sm:p-6">
                 <SheetHeader>
                   <SheetTitle>Профиль</SheetTitle>
                 </SheetHeader>
@@ -229,7 +232,7 @@ const Header = ({
           ) : (
             <Button 
               onClick={onShowAuth} 
-              className="rounded-full px-5 sm:px-6 py-2 text-sm font-bold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-blue-500/40 hover:scale-105 transition-all border-0"
+              className="rounded-full px-3 sm:px-5 md:px-6 py-2 text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-blue-500/40 hover:scale-105 transition-all border-0 min-h-[44px]"
             >
               Войти
             </Button>

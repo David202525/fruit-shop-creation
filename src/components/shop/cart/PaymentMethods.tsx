@@ -64,21 +64,21 @@ export const PaymentMethods = ({
         <Button
           onClick={() => handleClick('balance')}
           variant="outline"
-          className="w-full justify-start h-auto py-4 border-2 group hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:border-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
+          className="w-full justify-start h-auto py-3 sm:py-4 min-h-[52px] border-2 group hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:border-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
           disabled={isDisabled || !!loadingMethod}
         >
-          <div className="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-white/20 flex items-center justify-center mr-3 flex-shrink-0 transition-colors duration-300">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-100 group-hover:bg-white/20 flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 transition-colors duration-300">
             {loadingMethod === 'balance' ? (
-              <Icon name="Loader2" size={20} className="text-blue-600 group-hover:text-white animate-spin" />
+              <Icon name="Loader2" size={18} className="text-blue-600 group-hover:text-white animate-spin" />
             ) : (
-              <Icon name="Wallet" size={20} className="text-blue-600 group-hover:text-white" />
+              <Icon name="Wallet" size={18} className="text-blue-600 group-hover:text-white" />
             )}
           </div>
-          <div className="text-left flex-1">
-            <div className="font-semibold group-hover:text-white">
+          <div className="text-left flex-1 min-w-0">
+            <div className="font-semibold text-sm sm:text-base group-hover:text-white">
               {loadingMethod === 'balance' ? 'Оформляем заказ...' : 'Балансом сайта'}
             </div>
-            <div className="text-xs text-foreground/70 group-hover:text-white/90 mt-1">
+            <div className="text-xs text-foreground/70 group-hover:text-white/90 mt-0.5 break-words">
               {preorderEnabled
                 ? `Предоплата: ${(totalPrice * 0.5).toFixed(2)} ₽ (баланс: ${user.balance} ₽)`
                 : `Ваш баланс: ${user.balance} ₽`}
@@ -90,21 +90,21 @@ export const PaymentMethods = ({
       <Button
         onClick={() => handleClick('card')}
         variant="outline"
-        className="w-full justify-start h-auto py-4 border-2 group hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:border-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
+        className="w-full justify-start h-auto py-3 sm:py-4 min-h-[52px] border-2 group hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:border-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
         disabled={isDisabled || !!loadingMethod}
       >
-        <div className="w-10 h-10 rounded-full bg-green-100 group-hover:bg-white/20 flex items-center justify-center mr-3 flex-shrink-0 transition-colors duration-300">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-green-100 group-hover:bg-white/20 flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 transition-colors duration-300">
           {loadingMethod === 'card' ? (
-            <Icon name="Loader2" size={20} className="text-green-600 group-hover:text-white animate-spin" />
+            <Icon name="Loader2" size={18} className="text-green-600 group-hover:text-white animate-spin" />
           ) : (
-            <Icon name="CreditCard" size={20} className="text-green-600 group-hover:text-white" />
+            <Icon name="CreditCard" size={18} className="text-green-600 group-hover:text-white" />
           )}
         </div>
-        <div className="text-left flex-1">
-          <div className="font-semibold group-hover:text-white">
+        <div className="text-left flex-1 min-w-0">
+          <div className="font-semibold text-sm sm:text-base group-hover:text-white">
             {loadingMethod === 'card' ? 'Готовим оплату...' : 'Банковская карта'}
           </div>
-          <div className="text-xs text-foreground/70 group-hover:text-white/90 mt-1">
+          <div className="text-xs text-foreground/70 group-hover:text-white/90 mt-0.5 break-words">
             {loadingMethod === 'card'
               ? 'Перенаправляем на Альфабанк, не закрывайте страницу'
               : preorderEnabled
@@ -114,21 +114,19 @@ export const PaymentMethods = ({
         </div>
       </Button>
 
-
-
       {isCashPaymentAvailable && (
         <Button
           onClick={() => handleClick('cash')}
           variant="outline"
-          className="w-full justify-start h-auto py-4 border-2 group hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:border-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
+          className="w-full justify-start h-auto py-3 sm:py-4 min-h-[52px] border-2 group hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:border-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
           disabled={isDisabled || !!loadingMethod}
         >
-          <div className="w-10 h-10 rounded-full bg-amber-100 group-hover:bg-white/20 flex items-center justify-center mr-3 flex-shrink-0 transition-colors duration-300">
-            <Icon name="Banknote" size={20} className="text-amber-600 group-hover:text-white" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-100 group-hover:bg-white/20 flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 transition-colors duration-300">
+            <Icon name="Banknote" size={18} className="text-amber-600 group-hover:text-white" />
           </div>
-          <div className="text-left flex-1">
-            <div className="font-semibold group-hover:text-white">Наличными</div>
-            <div className="text-xs text-foreground/70 group-hover:text-white/90 mt-1">
+          <div className="text-left flex-1 min-w-0">
+            <div className="font-semibold text-sm sm:text-base group-hover:text-white">Наличными</div>
+            <div className="text-xs text-foreground/70 group-hover:text-white/90 mt-0.5 break-words">
               {preorderEnabled
                 ? `Предоплата ${(totalPrice * 0.5).toFixed(2)} ₽ картой, вторая часть после обработки`
                 : 'Оплата курьеру или в пункте выдачи'}
@@ -137,7 +135,7 @@ export const PaymentMethods = ({
         </Button>
       )}
 
-      <div className="pt-4 mt-4 border-t">
+      <div className="pt-3 sm:pt-4 mt-3 sm:mt-4 border-t">
         <div className="bg-muted/30 rounded-lg p-3 text-center space-y-1">
           <p className="text-xs font-semibold text-foreground">ИП Бояринцев Вадим Вячеславович</p>
           <p className="text-xs text-muted-foreground">ИНН: 222261894107</p>

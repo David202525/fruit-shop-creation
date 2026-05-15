@@ -50,25 +50,25 @@ export const OrderDetailsDialog = ({
 
   return (
     <Dialog open={!!order} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
+          <DialogTitle className="flex flex-wrap items-center justify-between gap-2 pr-6">
             <span>Заказ #{order.id}</span>
-            <Badge variant={getStatusBadgeVariant(order.status)}>
+            <Badge variant={getStatusBadgeVariant(order.status)} className="whitespace-nowrap">
               {statusLabels[order.status] || order.status}
             </Badge>
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 text-sm">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             <div>
               <div className="font-medium text-muted-foreground">Клиент</div>
-              <div>{order.user_name}</div>
+              <div className="break-words">{order.user_name}</div>
             </div>
             <div>
               <div className="font-medium text-muted-foreground">Телефон</div>
-              <div>{order.user_phone}</div>
+              <div className="break-all">{order.user_phone}</div>
             </div>
             <div>
               <div className="font-medium text-muted-foreground">Способ оплаты</div>
@@ -81,23 +81,23 @@ export const OrderDetailsDialog = ({
             </div>
             <div>
               <div className="font-medium text-muted-foreground">Доставка</div>
-              <div>
-                {order.delivery_type === 'delivery' ? '🚚 Доставка' : '🏪 Самовывоз'}
+              <div className="flex flex-wrap items-center gap-1">
+                <span>{order.delivery_type === 'delivery' ? '🚚 Доставка' : '🏪 Самовывоз'}</span>
                 {order.delivery_zone_id && (
-                  <span className="ml-1 text-xs text-primary">
+                  <span className="text-xs text-primary">
                     (Зона #{order.delivery_zone_id})
                   </span>
                 )}
                 {order.custom_delivery_price && (
-                  <span className={`ml-2 text-xs font-bold ${order.delivery_paid ? 'text-green-600 dark:text-green-400' : 'text-primary'}`}>
+                  <span className={`text-xs font-bold ${order.delivery_paid ? 'text-green-600 dark:text-green-400' : 'text-primary'}`}>
                     {order.custom_delivery_price}₽ {order.delivery_paid && '✓ Оплачена'}
                   </span>
                 )}
               </div>
             </div>
-            <div className="col-span-2">
+            <div className="sm:col-span-2">
               <div className="font-medium text-muted-foreground">Адрес</div>
-              <div>{order.delivery_address}</div>
+              <div className="break-words">{order.delivery_address}</div>
             </div>
             <div>
               <div className="font-medium text-muted-foreground">Дата создания</div>
@@ -154,7 +154,7 @@ export const OrderDetailsDialog = ({
                           <div className="text-xs font-medium text-amber-700 dark:text-amber-300">
                             Укажите доступное количество:
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex flex-col sm:flex-row gap-2">
                             <div className="flex-1">
                               <Input
                                 type="number"
@@ -162,7 +162,7 @@ export const OrderDetailsDialog = ({
                                 min="0"
                                 value={itemAvailability[item.id]?.quantity ?? ''}
                                 onChange={(e) => onItemAvailabilityChange(item.id, 'quantity', e.target.value)}
-                                className="h-8 text-sm"
+                                className="h-9 text-sm w-full"
                               />
                             </div>
                             <div className="flex-1">
@@ -172,11 +172,12 @@ export const OrderDetailsDialog = ({
                                 step="0.01"
                                 value={itemAvailability[item.id]?.price ?? ''}
                                 onChange={(e) => onItemAvailabilityChange(item.id, 'price', e.target.value)}
-                                className="h-8 text-sm"
+                                className="h-9 text-sm w-full"
                               />
                             </div>
                             <Button
                               size="sm"
+                              className="w-full sm:w-auto min-h-[36px]"
                               onClick={() => handleSaveAvailability(item.id, item.price)}
                               disabled={!itemAvailability[item.id]?.quantity}
                             >
@@ -214,9 +215,9 @@ export const OrderDetailsDialog = ({
           </div>
 
           <div className="space-y-2 pt-3 border-t">
-            <div className={`flex justify-between items-center ${order.is_preorder ? 'text-sm text-muted-foreground' : 'font-bold text-lg'}`}>
+            <div className={`flex justify-between items-center gap-2 ${order.is_preorder ? 'text-sm text-muted-foreground' : 'font-bold text-base sm:text-lg'}`}>
               <span>Итого:</span>
-              <span className={order.is_preorder ? 'line-through' : ''}>
+              <span className={`whitespace-nowrap ${order.is_preorder ? 'line-through' : ''}`}>
                 {order.items ? 
                   order.items
                     .filter((i: any) => i.product_name)
@@ -238,15 +239,15 @@ export const OrderDetailsDialog = ({
             {order.is_fully_paid ? (
               <div className="bg-green-50 dark:bg-green-950/20 border border-green-300 dark:border-green-700 rounded p-3">
                 <div className="flex items-center justify-center gap-2">
-                  <Icon name="CheckCircle" size={16} className="text-green-700 dark:text-green-300" />
+                  <Icon name="CheckCircle" size={16} className="text-green-700 dark:text-green-300 flex-shrink-0" />
                   <span className="text-green-900 dark:text-green-100 font-semibold text-sm">Заказ оплачен полностью</span>
                 </div>
               </div>
             ) : order.is_preorder && order.amount_paid ? (
               <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-300 dark:border-blue-700 rounded p-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-blue-900 dark:text-blue-100 font-bold text-base">Клиент оплатил (предоплата 50%):</span>
-                  <span className="text-blue-900 dark:text-blue-100 font-bold text-lg">{parseFloat(order.amount_paid).toFixed(2)}₽</span>
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <span className="text-blue-900 dark:text-blue-100 font-bold text-sm sm:text-base">Клиент оплатил (предоплата 50%):</span>
+                  <span className="text-blue-900 dark:text-blue-100 font-bold text-sm sm:text-base whitespace-nowrap">{parseFloat(order.amount_paid).toFixed(2)}₽</span>
                 </div>
               </div>
             ) : null}
