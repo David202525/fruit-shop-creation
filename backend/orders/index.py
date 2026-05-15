@@ -75,11 +75,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             json_build_object(
                                 'id',           oi.id,
                                 'product_id',   oi.product_id,
-                                'product_name', oi.product_name,
+                                'product_name', p.name,
                                 'quantity',     oi.quantity,
                                 'price',        oi.price,
-                                'size',         oi.size,
-                                'out_of_stock', oi.out_of_stock,
+                                'out_of_stock', oi.is_out_of_stock,
                                 'available_quantity', oi.available_quantity,
                                 'available_price',    oi.available_price
                             )
@@ -89,8 +88,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 FROM orders o
                 LEFT JOIN users u ON u.id = o.user_id
                 LEFT JOIN order_items oi ON oi.order_id = o.id
+                LEFT JOIN products p ON p.id = oi.product_id
                 {where_clause}
-                GROUP BY o.id, u.name, u.phone, u.email
+                GROUP BY o.id, u.full_name, u.phone, u.email
                 ORDER BY o.created_at DESC
             """, query_params)
             orders = cur.fetchall()
