@@ -48,6 +48,7 @@ interface AdminPanelTabsProps {
   onUpdateItemAvailability?: (itemId: number, availableQuantity: number, availablePrice?: number) => void;
   onRefreshUsers?: () => void;
   onUpdatePermissions: (userId: number, permissions: string[], isSuperAdmin: boolean) => void;
+  onToggleStock?: (product: Product, inStock: boolean) => void;
 }
 
 const AdminPanelTabs = ({
@@ -78,7 +79,8 @@ const AdminPanelTabs = ({
   onUpdateItemStock,
   onUpdateItemAvailability,
   onRefreshUsers,
-  onUpdatePermissions
+  onUpdatePermissions,
+  onToggleStock
 }: AdminPanelTabsProps) => {
   const isSuperAdmin = currentUser?.is_super_admin || false;
   const userPermissions = currentUser?.admin_permissions || [];
@@ -320,6 +322,7 @@ const AdminPanelTabs = ({
             onAddProduct={onAddProduct}
             onEditProduct={onEditProduct}
             onDeleteProduct={onDeleteProduct}
+            onToggleStock={onToggleStock}
           />
         </TabsContent>
       )}

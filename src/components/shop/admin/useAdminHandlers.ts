@@ -595,6 +595,45 @@ export const useAdminHandlers = (props: UseAdminHandlersProps) => {
     }
   };
 
+  const handleToggleStock = async (product: Product, inStock: boolean) => {
+    try {
+      const updatedProduct = {
+        ...product,
+        stock: inStock ? null : 0
+      };
+
+      const response = await fetch(props.API_PRODUCTS, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProduct)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: inStock ? 'Товар в наличии' : 'Нет в наличии',
+          description: inStock
+            ? `"${product.name}" отмечен как доступный`
+            : `"${product.name}" отмечен как недоступный`
+        });
+        props.loadProducts();
+      } else {
+        toast({
+          title: 'Ошибка',
+          description: data.error || 'Не удалось обновить наличие',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось обновить наличие товара',
+        variant: 'destructive'
+      });
+    }
+  };
+
   const handleDeleteProduct = async (productId: number) => {
     if (!confirm('Удалить товар? Это действие нельзя отменить.')) return;
     
@@ -689,6 +728,7 @@ export const useAdminHandlers = (props: UseAdminHandlersProps) => {
     handleUpdateItemStock,
     handleUpdateItemAvailability,
     handleDeleteProduct,
-    handleUpdatePermissions
+    handleUpdatePermissions,
+    handleToggleStock
   };
 };

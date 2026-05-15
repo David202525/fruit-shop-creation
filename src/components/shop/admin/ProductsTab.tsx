@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Product {
   id: number;
@@ -24,9 +25,23 @@ interface ProductsTabProps {
   onAddProduct: () => void;
   onEditProduct: (product: Product) => void;
   onDeleteProduct: (productId: number) => void;
+  onToggleStock?: (product: Product, inStock: boolean) => void;
 }
 
-const ProductsTab = ({ products, onAddProduct, onEditProduct, onDeleteProduct }: ProductsTabProps) => {
+const getStockBadge = (stock: number | null | undefined) => {
+  if (stock === null || stock === undefined) {
+    return { label: 'Всегда в наличии', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: 'Infinity' as const };
+  }
+  if (stock <= 0) {
+    return { label: 'Нет в наличии', color: 'bg-red-100 text-red-700 border-red-200', icon: 'XCircle' as const };
+  }
+  return { label: `В наличии: ${stock} шт.`, color: 'bg-green-100 text-green-700 border-green-200', icon: 'CheckCircle' as const };
+};
+
+const isOutOfStock = (stock: number | null | undefined) =>
+  stock !== null && stock !== undefined && stock <= 0;
+
+const ProductsTab = ({ products, onAddProduct, onEditProduct, onDeleteProduct, onToggleStock }: ProductsTabProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
@@ -136,10 +151,50 @@ const ProductsTab = ({ products, onAddProduct, onEditProduct, onDeleteProduct }:
                     <CardDescription className="text-xs sm:text-sm mt-1">{product.category_name}</CardDescription>
                     <div className="flex flex-wrap gap-2 mt-2">
                       <Badge variant="secondary" className="text-xs">{product.price} ₽</Badge>
-                      <Badge variant="outline" className="text-xs">Склад: {product.stock}</Badge>
+                      {(() => {
+                        const badge = getStockBadge(product.stock);
+                        return (
+                          <span className={cn(
+                            'inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border',
+                            badge.color
+                          )}>
+                            <Icon name={badge.icon} size={12} />
+                            {badge.label}
+                          </span>
+                        );
+                      })()}
+                      {product.expected_date && isOutOfStock(product.stock) && (
+                        <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border bg-amber-50 text-amber-700 border-amber-200">
+                          <Icon name="CalendarClock" size={12} />
+                          Ожидается: {new Date(product.expected_date).toLocaleDateString('ru-RU')}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    {onToggleStock && (
+                      isOutOfStock(product.stock) ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onToggleStock(product, true)}
+                          className="w-full sm:w-auto border-green-400 text-green-700 hover:bg-green-50 hover:border-green-500"
+                        >
+                          <Icon name="CheckCircle" size={16} className="mr-2 text-green-600" />
+                          <span>В наличии</span>
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onToggleStock(product, false)}
+                          className="w-full sm:w-auto border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+                        >
+                          <Icon name="XCircle" size={16} className="mr-2 text-red-500" />
+                          <span>Нет в наличии</span>
+                        </Button>
+                      )
+                    )}
                     <Button 
                       variant="outline" 
                       size="sm" 
