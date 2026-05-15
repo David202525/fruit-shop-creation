@@ -183,9 +183,9 @@ const Header = ({
                 <Icon name="Heart" size={18} className="sm:hidden" />
                 <Icon name="Heart" size={22} className="hidden sm:block" />
                 {favoritesCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 min-w-[20px] h-[20px] sm:min-w-[22px] sm:h-[22px] px-1 text-[10px] sm:text-[11px] rounded-full flex items-center justify-center bg-gradient-to-br from-red-500 to-red-600 text-white font-bold shadow-lg animate-pulse">
-                    {favoritesCount}
-                  </Badge>
+                  <span className="absolute -top-1 -right-1 min-w-[20px] min-h-[20px] px-1.5 py-0.5 text-[11px] rounded-full flex items-center justify-center bg-gradient-to-br from-red-500 to-red-600 text-white font-bold shadow-lg animate-pulse pointer-events-none z-10 leading-none">
+                    {favoritesCount > 99 ? '99+' : favoritesCount}
+                  </span>
                 )}
                 {isNewYear && <div className="icon-snow-sparkle">❄️</div>}
               </Button>
@@ -198,9 +198,9 @@ const Header = ({
                 <Icon name="ShoppingCart" size={18} className="sm:hidden" />
                 <Icon name="ShoppingCart" size={22} className="hidden sm:block" />
                 {cart.length > 0 && (
-                  <Badge className="absolute -top-1 -right-1 min-w-[20px] h-[20px] sm:min-w-[22px] sm:h-[22px] px-1 text-[10px] sm:text-[11px] rounded-full flex items-center justify-center bg-gradient-to-br from-yellow-500 to-amber-600 text-white font-bold shadow-lg animate-pulse">
-                    {cart.length}
-                  </Badge>
+                  <span className="absolute -top-1 -right-1 min-w-[20px] min-h-[20px] px-1.5 py-0.5 text-[11px] rounded-full flex items-center justify-center bg-gradient-to-br from-yellow-500 to-amber-600 text-white font-bold shadow-lg animate-pulse pointer-events-none z-10 leading-none">
+                    {cart.length > 99 ? '99+' : cart.length}
+                  </span>
                 )}
                 {isNewYear && <div className="icon-snow-sparkle">✨</div>}
               </Button>
