@@ -42,7 +42,7 @@ export default function StatisticsTab() {
       try {
         const response = await fetch(`${API_STATISTICS}?action=stats`);
         const data = await response.json();
-        setStatistics(data);
+        if (data.daily) setStatistics(data);
       } catch (error) {
         console.error('Failed to fetch statistics:', error);
       } finally {
