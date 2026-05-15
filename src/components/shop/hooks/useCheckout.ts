@@ -121,7 +121,8 @@ export const useCheckout = ({
 
     if (paymentMethod === 'card' || paymentMethod === 'alfabank') {
       try {
-        const response = await fetch('https://functions.poehali.dev/60d635ae-584e-4966-b483-528742647efb', {
+        const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+        const response = await fetch(`${API_BASE}/alfabank-payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -238,7 +239,7 @@ export const useCheckout = ({
         );
         
         try {
-          await fetch('https://functions.poehali.dev/fc281a64-4d76-4cbd-9ae6-6cf970c14f35', {
+          await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/notifications`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
