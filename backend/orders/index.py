@@ -124,6 +124,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if new_status is not None:
                 set_parts.append('status = %s')
                 params.append(new_status)
+                # При переводе предзаказа в обработку — рассчитать second_payment_amount
+                if new_status == 'processing':
+                    cur.execute("SELECT is_preorder, total_amount, amount_paid, second_payment_amount FROM orders WHERE id = %s", (order_id,))
+                    ord_data = cur.fetchone()
+                    if ord_data and ord_data['is_preorder'] and (not ord_data['second_payment_amount'] or float(ord_data['second_payment_amount']) == 0):
+                        second_amt = float(ord_data['total_amount']) - float(ord_data['amount_paid'] or 0)
+                        if second_amt > 0:
+                            set_parts.append('second_payment_amount = %s')
+                            params.append(second_amt)
 
             if rejection_reason is not None:
                 set_parts.append('rejection_reason = %s')

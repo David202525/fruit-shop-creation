@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Product, Order, User } from '@/types/shop';
 
-const API_AUTH = 'https://functions.poehali.dev/2cc7c24d-08b2-4c44-a9a7-8d09198dbefc';
-const API_PRODUCTS = 'https://functions.poehali.dev/5ae817c6-e62e-40c6-8e34-18ffac2d3cfc';
-const API_ORDERS = 'https://functions.poehali.dev/b35bef37-8423-4939-b43b-0fb565cc8853';
-const API_SETTINGS = 'https://functions.poehali.dev/9b1ac59e-93b6-41de-8974-a7f58d4ffaf9';
-const API_CATEGORIES = 'https://functions.poehali.dev/0a62d37c-9fd0-4ff3-9b5b-2c881073d3ac';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_AUTH = `${API_BASE}/auth`;
+const API_PRODUCTS = `${API_BASE}/products`;
+const API_ORDERS = `${API_BASE}/orders`;
+const API_SETTINGS = `${API_BASE}/settings`;
+const API_CATEGORIES = `${API_BASE}/categories`;
 
 const fetchWithRetry = async (url: string, retries = 5, delay = 800) => {
   for (let i = 0; i < retries; i++) {

@@ -7,8 +7,9 @@ import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 import { logUserAction } from '@/utils/userLogger';
 
-const API_ORDERS = 'https://functions.poehali.dev/b35bef37-8423-4939-b43b-0fb565cc8853';
-const API_ALFABANK = 'https://functions.poehali.dev/60d635ae-584e-4966-b483-528742647efb';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_ORDERS = `${API_BASE}/orders`;
+const API_ALFABANK = `${API_BASE}/alfabank-payment`;
 
 interface DeliveryPaymentDialogProps {
   order: {
