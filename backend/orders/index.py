@@ -185,6 +185,92 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             conn.commit()
             return ok({'success': True})
 
+        if method == 'POST':
+            raw_body = event.get('body') or '{}'
+            body = json.loads(raw_body)
+
+            user_id = body.get('user_id')
+            items = body.get('items', [])
+            payment_method = body.get('payment_method', 'cash')
+            delivery_address = body.get('delivery_address', '')
+            delivery_type = body.get('delivery_type', 'pickup')
+            delivery_zone_id = body.get('delivery_zone_id')
+            total_amount = body.get('total_amount', 0)
+            full_order_amount = body.get('full_order_amount', total_amount)
+            is_preorder = body.get('is_preorder', False)
+            cashback_percent = body.get('cashback_percent', 5)
+            alfabank_order_id = body.get('alfabank_order_id')
+
+            if not user_id or not items:
+                return err('user_id and items required')
+
+            cur.execute("SELECT id, balance, cashback FROM users WHERE id = %s", (user_id,))
+            user = cur.fetchone()
+            if not user:
+                return err('User not found', 404)
+
+            if payment_method == 'balance':
+                if float(user['balance']) < float(total_amount):
+                    return err('Недостаточно средств на балансе')
+                cur.execute(
+                    "UPDATE users SET balance = balance - %s WHERE id = %s",
+                    (total_amount, user_id)
+                )
+                cur.execute(
+                    "INSERT INTO transactions (user_id, type, amount, description) VALUES (%s, 'purchase', %s, 'Оплата заказа')",
+                    (user_id, -float(total_amount))
+                )
+
+            cashback_earned = round(float(full_order_amount) * float(cashback_percent) / 100, 2) if payment_method == 'balance' else 0
+
+            cur.execute("""
+                INSERT INTO orders (user_id, total_amount, status, payment_method, delivery_address,
+                    delivery_type, delivery_zone_id, cashback_earned, amount_paid, is_preorder, payment_verified)
+                VALUES (%s, %s, 'pending', %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id
+            """, (
+                user_id, full_order_amount, payment_method, delivery_address,
+                delivery_type, delivery_zone_id, cashback_earned,
+                total_amount if payment_method == 'balance' else 0,
+                is_preorder,
+                payment_method == 'balance'
+            ))
+            order_id = cur.fetchone()['id']
+
+            for item in items:
+                cur.execute("""
+                    INSERT INTO order_items (order_id, product_id, product_name, quantity, price, size)
+                    SELECT %s, p.id, p.name, %s, %s, %s FROM products p WHERE p.id = %s
+                """, (order_id, item.get('quantity', 1), item.get('price', 0), item.get('size'), item.get('product_id')))
+                if item.get('quantity'):
+                    cur.execute(
+                        "UPDATE products SET stock = GREATEST(COALESCE(stock,0) - %s, 0) WHERE id = %s AND stock IS NOT NULL",
+                        (item.get('quantity', 1), item.get('product_id'))
+                    )
+
+            if payment_method == 'balance' and cashback_earned > 0:
+                cur.execute(
+                    "UPDATE users SET cashback = COALESCE(cashback,0) + %s WHERE id = %s",
+                    (cashback_earned, user_id)
+                )
+
+            if alfabank_order_id:
+                cur.execute(
+                    "UPDATE orders SET alfabank_order_id = %s WHERE id = %s",
+                    (alfabank_order_id, order_id)
+                )
+
+            try:
+                cur.execute(
+                    "INSERT INTO notifications (user_id, type, title, message, entity_type, entity_id) VALUES (%s, 'order', 'Заказ оформлен', %s, 'order', %s)",
+                    (user_id, f'Ваш заказ #{order_id} успешно оформлен!', order_id)
+                )
+            except Exception:
+                pass
+
+            conn.commit()
+            return ok({'success': True, 'order_id': order_id})
+
         return err('Method not allowed', 405)
 
     except Exception as e:
