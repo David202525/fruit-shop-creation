@@ -279,6 +279,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             conn.commit()
             return ok({'success': True, 'order_id': order_id})
 
+        if method == 'DELETE':
+            raw_body = event.get('body') or '{}'
+            body = json.loads(raw_body)
+            order_id = body.get('order_id')
+            if not order_id:
+                return err('order_id required')
+            cur.execute("DELETE FROM order_items WHERE order_id = %s", (order_id,))
+            cur.execute("DELETE FROM orders WHERE id = %s", (order_id,))
+            conn.commit()
+            return ok({'success': True})
+
         return err('Method not allowed', 405)
 
     except Exception as e:
