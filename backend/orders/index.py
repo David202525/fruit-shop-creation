@@ -67,9 +67,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             cur.execute(f"""
                 SELECT
                     o.*,
-                    u.name  AS user_name,
-                    u.phone AS user_phone,
-                    u.email AS user_email,
+                    u.full_name AS user_name,
+                    u.phone     AS user_phone,
+                    u.email     AS user_email,
                     COALESCE(
                         json_agg(
                             json_build_object(
