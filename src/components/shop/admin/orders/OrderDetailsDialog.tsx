@@ -232,7 +232,7 @@ export const OrderDetailsDialog = ({
             <div className={`flex justify-between items-center gap-2 ${order.is_preorder ? 'text-sm text-muted-foreground' : 'font-bold text-base sm:text-lg'}`}>
               <span>Итого:</span>
               <span className={`whitespace-nowrap ${order.is_preorder ? 'line-through' : ''}`}>
-                {order.items ? 
+                {Array.isArray(order.items) && order.items.length > 0 ? 
                   order.items
                     .filter((i: any) => i.product_name)
                     .reduce((sum: number, i: any) => {
@@ -246,7 +246,7 @@ export const OrderDetailsDialog = ({
                       }
                       return sum + (parseFloat(i.price) * parseInt(i.quantity));
                     }, 0).toFixed(2)
-                  : parseFloat(order.total_amount).toFixed(2)
+                  : parseFloat(order.total_amount || '0').toFixed(2)
                 }₽
               </span>
             </div>

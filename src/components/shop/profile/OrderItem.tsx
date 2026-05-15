@@ -41,7 +41,7 @@ const OrderItem = ({ order, isExpanded, onToggle, onCancel, onPayDelivery, onPay
             <span className="text-xs sm:text-sm font-medium whitespace-nowrap">
               {order.is_preorder && order.amount_paid ? 
                 parseFloat(order.amount_paid).toFixed(2)
-                : order.items ? 
+                : Array.isArray(order.items) && order.items.length > 0 ? 
                   order.items
                     .filter((i: any) => i.product_name)
                     .reduce((sum: number, i: any) => {
@@ -55,7 +55,7 @@ const OrderItem = ({ order, isExpanded, onToggle, onCancel, onPayDelivery, onPay
                       }
                       return sum + (parseFloat(i.price) * parseInt(i.quantity));
                     }, 0).toFixed(2)
-                  : parseFloat(order.total_amount).toFixed(2)
+                  : parseFloat(order.total_amount || '0').toFixed(2)
               } ₽
             </span>
             <Badge variant="outline" className="text-base sm:text-xs px-1 py-0 sm:px-2 sm:py-1">

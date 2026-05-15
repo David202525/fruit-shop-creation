@@ -41,7 +41,7 @@ export const OrderCard = ({
               {statusLabels[order.status] || order.status}
             </Badge>
             <div className={`font-bold text-sm sm:text-base whitespace-nowrap ${order.is_preorder ? 'line-through text-muted-foreground' : ''}`}>
-              {order.items ? 
+              {Array.isArray(order.items) && order.items.length > 0 ? 
                 order.items
                   .filter((i: any) => i.product_name)
                   .reduce((sum: number, i: any) => {
@@ -55,7 +55,7 @@ export const OrderCard = ({
                     }
                     return sum + (parseFloat(i.price) * parseInt(i.quantity));
                   }, 0).toFixed(2)
-                : parseFloat(order.total_amount).toFixed(2)
+                : parseFloat(order.total_amount || '0').toFixed(2)
               }₽
             </div>
             {order.is_fully_paid ? (
