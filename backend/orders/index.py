@@ -58,7 +58,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         method = event.get('httpMethod', 'GET')
 
         if method == 'GET':
-            cur.execute("""
+            params = event.get('queryStringParameters') or {}
+            user_id = params.get('user_id')
+
+            where_clause = 'WHERE o.user_id = %s' if user_id else ''
+            query_params = (int(user_id),) if user_id else ()
+
+            cur.execute(f"""
                 SELECT
                     o.*,
                     u.name  AS user_name,
@@ -83,9 +89,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 FROM orders o
                 LEFT JOIN users u ON u.id = o.user_id
                 LEFT JOIN order_items oi ON oi.order_id = o.id
+                {where_clause}
                 GROUP BY o.id, u.name, u.phone, u.email
                 ORDER BY o.created_at DESC
-            """)
+            """, query_params)
             orders = cur.fetchall()
             return ok({'orders': [dict(r) for r in orders]})
 
