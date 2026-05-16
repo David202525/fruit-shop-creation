@@ -323,19 +323,25 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
                 # Отправка email клиенту
                 customer_email = body.get('customer_email') or ''
+
+                # Всегда берём данные заказа для письма
+                cur.execute("SELECT delivery_address, total_amount FROM orders WHERE id = %s", (order_id,))
+                order_row = cur.fetchone()
+                total_for_email = float(order_row['total_amount']) if order_row else None
+
                 if not customer_email:
-                    # Пробуем извлечь email из delivery_address: "email:xxx@xxx.com | ..."
-                    cur.execute("SELECT delivery_address, total_amount FROM orders WHERE id = %s", (order_id,))
-                    order_row = cur.fetchone()
+                    # 1. Пробуем из delivery_address
                     if order_row and order_row['delivery_address']:
                         m = re.search(r'email:([^\s|,]+)', order_row['delivery_address'])
                         if m:
                             customer_email = m.group(1).strip()
-                    total_for_email = float(order_row['total_amount']) if order_row else None
-                else:
-                    cur.execute("SELECT total_amount FROM orders WHERE id = %s", (order_id,))
-                    o = cur.fetchone()
-                    total_for_email = float(o['total_amount']) if o else None
+
+                if not customer_email:
+                    # 2. Берём из таблицы users
+                    cur.execute("SELECT email FROM users WHERE id = %s", (user_id,))
+                    u_email_row = cur.fetchone()
+                    if u_email_row and u_email_row['email']:
+                        customer_email = u_email_row['email']
 
                 if customer_email:
                     # Загружаем товары заказа для письма

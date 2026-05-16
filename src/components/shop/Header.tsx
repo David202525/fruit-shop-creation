@@ -91,8 +91,12 @@ const Header = ({
   };
   
   return (
-    <header className="header-height sticky z-50 bg-gradient-to-r from-green-800 via-emerald-800 to-green-800 text-white shadow-md overflow-hidden" style={{ top: 'var(--banner-height, 0px)' }}>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.06)_0%,transparent_70%)] pointer-events-none" />
+    <header className="header-height sticky z-50 overflow-hidden text-white" style={{ top: 'var(--banner-height, 0px)', background: 'linear-gradient(135deg, #064e3b 0%, #065f46 40%, #047857 70%, #059669 100%)' }}>
+      {/* Неоновое свечение снизу */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-80" />
+      {/* Тонкая текстура */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(52,211,153,0.15)_0%,transparent_60%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_100%,rgba(16,185,129,0.1)_0%,transparent_50%)] pointer-events-none" />
       {isNewYear && <SnowEffect />}
       
       {isNewYear && (
@@ -121,7 +125,7 @@ const Header = ({
         </>
       )}
       
-      <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between relative z-10 min-w-0">
+      <div className="container mx-auto px-2 sm:px-4 py-1.5 sm:py-2.5 flex items-center justify-between relative z-10 min-w-0 gap-1">
         <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink min-w-0 overflow-hidden">
           <SideMenu siteSettings={siteSettings} user={user} onSectionChange={onSectionChange} onShowAuth={onShowAuth} />
           <button 
@@ -139,10 +143,19 @@ const Header = ({
               />
             )}
             <div className="flex flex-col leading-tight">
-              <span className="font-display font-bold text-white text-base sm:text-xl md:text-2xl tracking-wide drop-shadow-sm truncate max-w-[130px] sm:max-w-[220px] md:max-w-none">
+              <span
+                className="font-display font-bold text-base sm:text-xl md:text-2xl tracking-wide truncate max-w-[130px] sm:max-w-[240px] md:max-w-none"
+                style={{
+                  color: '#ffffff',
+                  textShadow: '0 0 20px rgba(52,211,153,0.6), 0 0 40px rgba(52,211,153,0.3), 0 1px 3px rgba(0,0,0,0.3)'
+                }}
+              >
                 {siteSettings?.site_name || 'Питомник растений'}
               </span>
-              <span className="hidden sm:block text-green-200 text-[10px] sm:text-xs font-sans tracking-widest uppercase opacity-80">
+              <span
+                className="text-[9px] sm:text-[11px] font-sans tracking-[0.2em] uppercase"
+                style={{ color: 'rgba(110,231,183,0.85)' }}
+              >
                 Питомник · Саженцы · Доставка
               </span>
             </div>
@@ -181,11 +194,11 @@ const Header = ({
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className={`relative overflow-visible text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 border-2 border-red-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}
+                className={`relative overflow-visible text-white hover:bg-white/10 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/5 border border-white/20 transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}
                 onClick={() => onSectionChange('favorites')}
               >
-                <Icon name="Heart" size={18} className="sm:hidden" />
-                <Icon name="Heart" size={22} className="hidden sm:block" />
+                <Icon name="Heart" size={16} className="sm:hidden" />
+                <Icon name="Heart" size={20} className="hidden sm:block" />
                 {favoritesCount > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[20px] min-h-[20px] px-1.5 py-0.5 text-[11px] rounded-full flex items-center justify-center bg-gradient-to-br from-red-500 to-red-600 text-white font-bold shadow-lg animate-pulse pointer-events-none z-10 leading-none">
                     {favoritesCount > 99 ? '99+' : favoritesCount}
@@ -198,9 +211,9 @@ const Header = ({
 
           {user && <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className={`relative overflow-visible text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 hover:from-yellow-500/30 hover:to-amber-500/30 border-2 border-yellow-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
-                <Icon name="ShoppingCart" size={18} className="sm:hidden" />
-                <Icon name="ShoppingCart" size={22} className="hidden sm:block" />
+              <Button variant="ghost" size="icon" className={`relative overflow-visible text-white hover:bg-white/10 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/5 border border-white/20 transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
+                <Icon name="ShoppingCart" size={16} className="sm:hidden" />
+                <Icon name="ShoppingCart" size={20} className="hidden sm:block" />
                 {cart.length > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[20px] min-h-[20px] px-1.5 py-0.5 text-[11px] rounded-full flex items-center justify-center bg-gradient-to-br from-yellow-500 to-amber-600 text-white font-bold shadow-lg animate-pulse pointer-events-none z-10 leading-none">
                     {cart.length > 99 ? '99+' : cart.length}
@@ -220,9 +233,9 @@ const Header = ({
           {user ? (
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className={`relative text-primary-foreground hover:bg-primary/90 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 border-2 border-blue-200/30 backdrop-blur-sm transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
-                  <Icon name="User" size={18} className="sm:hidden" />
-                  <Icon name="User" size={22} className="hidden sm:block" />
+                <Button variant="ghost" size="icon" className={`relative text-white hover:bg-white/10 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/5 border border-white/20 transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
+                  <Icon name="User" size={16} className="sm:hidden" />
+                  <Icon name="User" size={20} className="hidden sm:block" />
                   {isNewYear && <div className="icon-snow-sparkle">🎅</div>}
                 </Button>
               </SheetTrigger>
@@ -236,7 +249,8 @@ const Header = ({
           ) : (
             <Button 
               onClick={onShowAuth} 
-              className="rounded-full px-3 sm:px-5 md:px-6 py-2 text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-blue-500/40 hover:scale-105 transition-all border-0 min-h-[44px]"
+              className="rounded-full px-3 sm:px-5 py-1.5 text-xs sm:text-sm font-semibold text-emerald-900 transition-all hover:scale-105 border-0 min-h-[36px] sm:min-h-[40px]"
+              style={{ background: 'linear-gradient(135deg, #6ee7b7, #34d399)', boxShadow: '0 0 16px rgba(52,211,153,0.5)' }}
             >
               Войти
             </Button>
