@@ -337,7 +337,7 @@ export const useAdminHandlers = (props: UseAdminHandlersProps) => {
     }
   };
 
-  const handleUpdateOrderStatus = async (orderId: number, status: string, rejectionReason?: string, customDeliveryPrice?: number | null, trackingNumber?: string) => {
+  const handleUpdateOrderStatus = async (orderId: number, status: string, rejectionReason?: string, customDeliveryPrice?: number | null, trackingNumber?: string, customerEmail?: string) => {
     try {
       const response = await fetch(props.API_ORDERS, {
         method: 'PUT',
@@ -347,7 +347,8 @@ export const useAdminHandlers = (props: UseAdminHandlersProps) => {
           status,
           rejection_reason: rejectionReason,
           custom_delivery_price: customDeliveryPrice,
-          tracking_number: trackingNumber ?? undefined
+          tracking_number: trackingNumber ?? undefined,
+          customer_email: customerEmail || undefined
         })
       });
 
@@ -368,6 +369,36 @@ export const useAdminHandlers = (props: UseAdminHandlersProps) => {
           description: `Заказ #${orderId} теперь: ${status}${trackingNumber ? `. Трек: ${trackingNumber}` : ''}`
         });
         props.loadOrders();
+
+        // Отправляем email клиенту если есть адрес
+        if (customerEmail) {
+          const statusMap: Record<string, [string, string, string]> = {
+            processing: ['#3b82f6', '📦', 'Принят в обработку'],
+            delivered:  ['#10b981', '✅', 'Доставлен'],
+            rejected:   ['#ef4444', '❌', 'Отклонён'],
+            cancelled:  ['#6b7280', '🚫', 'Отменён'],
+            pending:    ['#f59e0b', '⏳', 'Ожидает'],
+          };
+          const [color, emoji, label] = statusMap[status] || ['#6b7280', '📋', status];
+          const extraBlock = status === 'rejected' && rejectionReason
+            ? `<div style="background:#fff1f2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;"><p style="margin:0;color:#991b1b;font-size:14px;"><strong>Причина:</strong> ${rejectionReason}</p></div>`
+            : status === 'delivered' && trackingNumber
+            ? `<div style="background:#ecfdf5;border-left:4px solid #10b981;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;"><p style="margin:0;color:#065f46;font-size:14px;"><strong>Трек-номер:</strong> ${trackingNumber}</p></div>`
+            : status === 'processing'
+            ? `<div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;"><p style="margin:0;color:#1e40af;font-size:14px;">Мы проверяем ваш заказ и свяжемся с вами в ближайшее время.</p></div>`
+            : '';
+          const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 16px;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);"><tr><td style="background:linear-gradient(135deg,#166534,#15803d);padding:32px 40px;text-align:center;"><p style="margin:0 0 8px;font-size:36px;">${emoji}</p><h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;">Питомник растений</h1><p style="margin:8px 0 0;color:#bbf7d0;font-size:14px;">Обновление статуса заказа</p></td></tr><tr><td style="padding:32px 40px;"><p style="margin:0 0 24px;color:#374151;font-size:16px;">Статус вашего заказа <strong>#${orderId}</strong> изменён:</p><div style="text-align:center;margin:0 0 24px;"><span style="display:inline-block;background:${color};color:#ffffff;font-size:18px;font-weight:700;padding:12px 32px;border-radius:100px;">${emoji} ${label}</span></div>${extraBlock}<hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;"><p style="margin:0;color:#6b7280;font-size:13px;line-height:1.6;">Если у вас возникли вопросы, свяжитесь с нами через чат поддержки на сайте.<br>Спасибо, что выбрали наш питомник! 🌱</p></td></tr><tr><td style="background:#f9fafb;padding:20px 40px;text-align:center;border-top:1px solid #e5e7eb;"><p style="margin:0;color:#9ca3af;font-size:12px;">© 2024 Питомник растений · ИП Бояринцев Вадим Вячеславович</p></td></tr></table></td></tr></table></body></html>`;
+          fetch(props.API_AUTH, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'send_order_notification',
+              to_email: customerEmail,
+              subject: `Заказ #${orderId} — ${label}`,
+              html_body: html
+            })
+          }).catch(() => {});
+        }
       }
     } catch (error) {
       toast({

@@ -8,7 +8,7 @@ import { StatusEditDialog } from './orders/StatusEditDialog';
 
 interface OrdersTabProps {
   orders: Record<string, unknown>[];
-  onUpdateStatus: (orderId: number, status: string, rejectionReason?: string, customDeliveryPrice?: number | null, trackingNumber?: string) => void;
+  onUpdateStatus: (orderId: number, status: string, rejectionReason?: string, customDeliveryPrice?: number | null, trackingNumber?: string, customerEmail?: string) => void;
   onDeleteOrder: (orderId: number) => void;
   onUpdateItemStock?: (orderId: number, itemId: number, isOutOfStock: boolean) => void;
   onUpdateItemAvailability?: (itemId: number, availableQuantity: number, availablePrice?: number) => void;
@@ -55,7 +55,8 @@ const OrdersTab = ({ orders, onUpdateStatus, onDeleteOrder, onUpdateItemStock, o
         newStatus, 
         newStatus === 'rejected' ? rejectionReason : undefined,
         deliveryPrice,
-        trackingNumber.trim() || undefined
+        trackingNumber.trim() || undefined,
+        (editingOrder.user_email as string) || undefined
       );
       setEditingOrder(null);
       setRejectionReason('');

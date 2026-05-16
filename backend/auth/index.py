@@ -1161,6 +1161,33 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         conn.close()
         return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'success': True}), 'isBase64Encoded': False}
 
+    if action == 'send_order_notification':
+        to_email = body_data.get('to_email', '')
+        subject = body_data.get('subject', '')
+        html_body = body_data.get('html_body', '')
+        if not to_email or not html_body:
+            return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'to_email and html_body required'}), 'isBase64Encoded': False}
+        try:
+            import smtplib
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
+            smtp_host = os.environ.get('SMTP_HOST', '')
+            smtp_port = int(os.environ.get('SMTP_PORT', 465))
+            smtp_user = os.environ.get('SMTP_USER', '')
+            smtp_password = os.environ.get('SMTP_PASSWORD', '')
+            if smtp_host and smtp_user and smtp_password:
+                msg = MIMEMultipart('alternative')
+                msg['Subject'] = subject
+                msg['From'] = smtp_user
+                msg['To'] = to_email
+                msg.attach(MIMEText(html_body, 'html', 'utf-8'))
+                with smtplib.SMTP_SSL(smtp_host, smtp_port) as server:
+                    server.login(smtp_user, smtp_password)
+                    server.sendmail(smtp_user, [to_email], msg.as_string())
+            return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'success': True}), 'isBase64Encoded': False}
+        except Exception as e:
+            return {'statusCode': 500, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': str(e)}), 'isBase64Encoded': False}
+
     if action in ('forgot_password', 'reset_password', 'register'):
         pass
     elif not phone or not password:

@@ -138,7 +138,7 @@ const Header = ({
                 }}
               />
             )}
-            <span className="font-display font-bold text-white text-sm sm:text-lg md:text-xl truncate max-w-[120px] sm:max-w-[200px] md:max-w-none tracking-wide drop-shadow-sm">
+            <span className="font-display font-bold text-primary text-sm sm:text-lg md:text-xl truncate max-w-[120px] sm:max-w-[200px] md:max-w-none tracking-wide">
               {siteSettings?.site_name || 'Питомник растений'}
             </span>
           </button>
