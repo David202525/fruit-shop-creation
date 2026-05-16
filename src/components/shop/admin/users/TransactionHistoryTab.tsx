@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
 import { formatDateTime } from '@/lib/dateUtils';
 
 interface Transaction {
@@ -36,7 +35,6 @@ const TransactionHistoryTab = ({
   onRefresh,
 }: TransactionHistoryTabProps) => {
   const { toast } = useToast();
-  const { user } = useAuth();
   const [refundTx, setRefundTx] = useState<Transaction | null>(null);
   const [refundAmount, setRefundAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -95,7 +93,7 @@ const TransactionHistoryTab = ({
   };
 
   const submitRefund = async () => {
-    if (!refundTx || !user) return;
+    if (!refundTx) return;
     const amt = parseFloat(refundAmount);
     if (isNaN(amt) || amt <= 0) {
       toast({
@@ -124,7 +122,7 @@ const TransactionHistoryTab = ({
           body: JSON.stringify({
             transaction_id: refundTx.id,
             amount: amt,
-            admin_id: user.id,
+            admin_id: 0,
           }),
         }
       );
