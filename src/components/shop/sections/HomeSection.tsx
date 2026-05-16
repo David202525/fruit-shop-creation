@@ -161,7 +161,7 @@ const HomeSection = ({ products, onNavigate, onAddToCart, onViewDetails, favorit
       )}
       
       {/* Hero секция */}
-      <section className="relative overflow-hidden rounded-3xl min-h-[380px] md:min-h-[480px] flex items-center">
+      <section className="relative overflow-hidden rounded-2xl min-h-[380px] md:min-h-[480px] flex items-center">
         {/* Фоновый градиент */}
         <div className={`absolute inset-0 bg-gradient-to-br ${heroContent.gradient}`} />
         
@@ -223,9 +223,8 @@ const HomeSection = ({ products, onNavigate, onAddToCart, onViewDetails, favorit
               </Button>
               <Button
                 size="lg"
-                variant="outline"
                 onClick={() => onNavigate('about')}
-                className="border-white/40 text-white hover:bg-white/10 backdrop-blur-sm font-medium text-base"
+                className="bg-white/20 border border-white/50 text-white hover:bg-white/30 backdrop-blur-sm font-semibold text-base shadow-lg"
               >
                 О нас
               </Button>
@@ -296,7 +295,7 @@ const HomeSection = ({ products, onNavigate, onAddToCart, onViewDetails, favorit
       <section className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-3xl p-8 md:p-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
-            { value: '500+', label: 'видов растений' },
+            { value: products.length > 0 ? `${products.length}` : '...', label: 'видов растений' },
             { value: '10 лет', label: 'опыт питомника' },
             { value: '15 000+', label: 'довольных клиентов' },
             { value: '98%', label: 'приживаемость' },

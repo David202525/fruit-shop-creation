@@ -38,7 +38,8 @@ export const useCheckout = ({
     deliveryType: string = 'pickup',
     deliveryZoneId?: number,
     deliveryCity?: string,
-    deliveryAddress?: string
+    deliveryAddress?: string,
+    customerEmail?: string
   ) => {
     if (!user) {
       toast({
@@ -139,9 +140,10 @@ export const useCheckout = ({
         const data = await response.json();
 
         if (data.success && data.payment_url) {
-          const fullDeliveryAddress = deliveryType === 'pickup'
+          const baseAddr = deliveryType === 'pickup'
             ? `Самовывоз: ${siteSettings?.address || 'Адрес не указан'}`
             : `Доставка: ${deliveryCity}, ${deliveryAddress}`;
+          const fullDeliveryAddress = customerEmail ? `email:${customerEmail} | ${baseAddr}` : baseAddr;
 
           const orderResponse = await fetch(API_ORDERS, {
             method: 'POST',
@@ -195,9 +197,10 @@ export const useCheckout = ({
     }
 
     try {
-      const fullDeliveryAddress = deliveryType === 'pickup'
+      const baseAddr2 = deliveryType === 'pickup'
         ? `Самовывоз: ${siteSettings?.address || 'Адрес не указан'}`
         : `Доставка: ${deliveryCity}, ${deliveryAddress}`;
+      const fullDeliveryAddress = customerEmail ? `email:${customerEmail} | ${baseAddr2}` : baseAddr2;
 
       const response = await fetch(API_ORDERS, {
         method: 'POST',
