@@ -5,6 +5,8 @@ import smtplib
 import psycopg2
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import formataddr
+from email.header import Header
 from psycopg2.extras import RealDictCursor
 from typing import Any, Dict, Optional
 
@@ -19,7 +21,7 @@ def send_order_email(to_email: str, subject: str, html_body: str) -> None:
         return
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
-    msg['From'] = smtp_user
+    msg['From'] = formataddr((str(Header('Сад мечты', 'utf-8')), smtp_user))
     msg['To'] = to_email
     msg.attach(MIMEText(html_body, 'html', 'utf-8'))
     try:
