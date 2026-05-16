@@ -16,45 +16,17 @@ const LeafyTitle = ({ text, className = '' }: LeafyTitleProps) => {
           position: relative;
           display: inline-block;
           font-family: 'Playfair Display', serif;
-          font-weight: 900;
+          font-weight: 700;
           color: #ffffff;
-          text-shadow: 
-            0 0 10px rgba(255, 255, 255, 0.9),
-            -2px -2px 0 #2d5016,
-            -2px -1px 0 #2d5016,
-            -2px 0 0 #2d5016,
-            -2px 1px 0 #2d5016,
-            -2px 2px 0 #2d5016,
-            -1px -2px 0 #2d5016,
-            -1px -1px 0 #2d5016,
-            -1px 0 0 #2d5016,
-            -1px 1px 0 #2d5016,
-            -1px 2px 0 #2d5016,
-            0 -2px 0 #2d5016,
-            0 -1px 0 #2d5016,
-            0 1px 0 #2d5016,
-            0 2px 0 #2d5016,
-            1px -2px 0 #2d5016,
-            1px -1px 0 #2d5016,
-            1px 0 0 #2d5016,
-            1px 1px 0 #2d5016,
-            1px 2px 0 #2d5016,
-            2px -2px 0 #2d5016,
-            2px -1px 0 #2d5016,
-            2px 0 0 #2d5016,
-            2px 1px 0 #2d5016,
-            2px 2px 0 #2d5016,
-            4px 4px 8px rgba(0, 0, 0, 0.6);
-          letter-spacing: 0.08em;
-          filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.5));
+          text-shadow: 0 1px 3px rgba(0,0,0,0.25);
+          letter-spacing: 0.04em;
         }
         
         .leaf-decoration {
           position: absolute;
-          font-size: 0.6em;
-          opacity: 0.8;
+          font-size: 0.55em;
+          opacity: 0.7;
           animation: leafSway 3s ease-in-out infinite;
-          filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2));
         }
         
         .leaf-1 { top: -0.3em; left: 0.2em; animation-delay: 0s; }

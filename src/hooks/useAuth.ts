@@ -15,6 +15,18 @@ export const useAuth = () => {
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
       localStorage.setItem('userId', parsedUser.id.toString());
+
+      // Подгружаем свежий профиль с email с сервера
+      fetch(`${API_AUTH}?action=user&user_id=${parsedUser.id}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.user) {
+            const refreshed = { ...parsedUser, ...data.user };
+            setUser(refreshed);
+            localStorage.setItem('user', JSON.stringify(refreshed));
+          }
+        })
+        .catch(() => {});
     }
   }, []);
 
