@@ -6,49 +6,49 @@
 
 @layer base {
   :root {
-    --background: 220 15% 98%;
-    --foreground: 222 47% 11%;
+    --background: 120 18% 97%;
+    --foreground: 140 35% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 140 35% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 140 35% 9%;
 
-    --primary: 221 83% 53%;
+    --primary: 145 60% 30%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 120 14% 93%;
+    --secondary-foreground: 140 35% 9%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 120 10% 93%;
+    --muted-foreground: 140 8% 42%;
 
-    --accent: 221 83% 53%;
+    --accent: 145 60% 30%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 221 83% 53%;
+    --border: 120 10% 87%;
+    --input: 120 10% 87%;
+    --ring: 145 60% 30%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 220 15% 98%;
+    --sidebar-background: 120 18% 97%;
 
-    --sidebar-foreground: 222 47% 11%;
+    --sidebar-foreground: 140 35% 9%;
 
-    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary: 145 60% 30%;
 
     --sidebar-primary-foreground: 0 0% 100%;
 
-    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent: 120 14% 93%;
 
-    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-accent-foreground: 140 35% 9%;
 
-    --sidebar-border: 220 13% 91%;
+    --sidebar-border: 120 10% 87%;
 
     --sidebar-ring: 221 83% 53%;
   }
@@ -113,19 +113,19 @@
     height: 100%;
     background:
       radial-gradient(
-        circle at 20% 30%,
-        rgba(34, 197, 94, 0.03) 0%,
+        circle at 15% 25%,
+        rgba(22, 163, 74, 0.07) 0%,
+        transparent 55%
+      ),
+      radial-gradient(
+        circle at 85% 65%,
+        rgba(20, 184, 100, 0.05) 0%,
         transparent 50%
       ),
       radial-gradient(
-        circle at 80% 70%,
-        rgba(59, 130, 246, 0.03) 0%,
-        transparent 50%
-      ),
-      radial-gradient(
-        circle at 50% 50%,
-        rgba(168, 85, 247, 0.02) 0%,
-        transparent 70%
+        circle at 50% 90%,
+        rgba(134, 239, 172, 0.04) 0%,
+        transparent 60%
       );
     pointer-events: none;
     z-index: 0;

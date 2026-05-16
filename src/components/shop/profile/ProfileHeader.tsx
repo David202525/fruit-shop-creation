@@ -149,21 +149,34 @@ const ProfileHeader = ({ user, siteSettings, onShowAdminPanel, onUserUpdate }: P
         )}
         <h3 className="text-lg sm:text-xl font-semibold break-words px-2">{user?.full_name || 'Пользователь'}</h3>
         <p className="text-xs sm:text-sm text-muted-foreground">{user?.phone}</p>
-        <div className="mt-1">
+
+        {/* Email */}
+        <div className="mt-2 px-2">
           {!showEmailEdit ? (
-            <button onClick={() => { setShowEmailEdit(true); setEmailInput(user?.email || ''); setEmailMsg(''); }} className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 mx-auto">
-              <Icon name="Mail" size={12} />
-              {user?.email ? user.email : <span className="underline">Добавить email для восстановления пароля</span>}
-              <Icon name="Pencil" size={11} />
-            </button>
+            <div className="flex items-center justify-center gap-1.5">
+              <Icon name="Mail" size={14} className="text-muted-foreground flex-shrink-0" />
+              {user?.email ? (
+                <span className="text-sm text-foreground font-medium truncate max-w-[200px]">{user.email}</span>
+              ) : (
+                <span className="text-xs text-muted-foreground italic">Email не указан</span>
+              )}
+              <button
+                onClick={() => { setShowEmailEdit(true); setEmailInput(user?.email || ''); setEmailMsg(''); }}
+                className="text-muted-foreground hover:text-primary transition-colors ml-0.5"
+                title="Изменить email"
+              >
+                <Icon name="Pencil" size={12} />
+              </button>
+            </div>
           ) : (
-            <div className="flex flex-col gap-1 px-2 mt-1">
+            <div className="flex flex-col gap-1">
               <div className="flex gap-1">
-                <Input type="email" placeholder="example@mail.ru" value={emailInput} onChange={e => setEmailInput(e.target.value)} className="h-7 text-xs" disabled={emailLoading} />
-                <Button size="sm" className="h-7 px-2 text-xs" onClick={handleSaveEmail} disabled={emailLoading}>OK</Button>
-                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setShowEmailEdit(false)}>✕</Button>
+                <Input type="email" placeholder="example@mail.ru" value={emailInput} onChange={e => setEmailInput(e.target.value)} className="h-8 text-sm" disabled={emailLoading} />
+                <Button size="sm" className="h-8 px-3 text-xs" onClick={handleSaveEmail} disabled={emailLoading}>OK</Button>
+                <Button size="sm" variant="ghost" className="h-8 px-2 text-xs" onClick={() => setShowEmailEdit(false)}>✕</Button>
               </div>
-              {emailMsg && <p className="text-xs text-muted-foreground">{emailMsg}</p>}
+              <p className="text-xs text-muted-foreground">На этот email придут уведомления о заказах</p>
+              {emailMsg && <p className="text-xs text-green-600">{emailMsg}</p>}
             </div>
           )}
         </div>

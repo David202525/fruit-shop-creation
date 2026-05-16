@@ -161,7 +161,7 @@ const HomeSection = ({ products, onNavigate, onAddToCart, onViewDetails, favorit
       )}
       
       {/* Hero секция */}
-      <section className="relative overflow-hidden rounded-xl min-h-[340px] md:min-h-[420px] flex items-center">
+      <section className="relative overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8 min-h-[320px] md:min-h-[400px] flex items-center">
         {/* Фоновый градиент */}
         <div className={`absolute inset-0 bg-gradient-to-br ${heroContent.gradient}`} />
         
@@ -194,7 +194,7 @@ const HomeSection = ({ products, onNavigate, onAddToCart, onViewDetails, favorit
         </div>
 
         {/* Контент */}
-        <div className="relative z-10 w-full px-6 md:px-10 py-10 md:py-14">
+        <div className="relative z-10 w-full px-6 sm:px-10 md:px-14 py-10 md:py-14">
           <div className="max-w-2xl">
             {/* Бейдж */}
             <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 text-white text-sm font-medium px-4 py-1.5 rounded-full mb-6">
