@@ -1171,6 +1171,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             import smtplib
             from email.mime.multipart import MIMEMultipart
             from email.mime.text import MIMEText
+            from email.utils import formataddr
+            from email.header import Header
             smtp_host = os.environ.get('SMTP_HOST', '')
             smtp_port = int(os.environ.get('SMTP_PORT', 465))
             smtp_user = os.environ.get('SMTP_USER', '')
@@ -1178,7 +1180,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if smtp_host and smtp_user and smtp_password:
                 msg = MIMEMultipart('alternative')
                 msg['Subject'] = subject
-                msg['From'] = smtp_user
+                msg['From'] = formataddr((str(Header('Сад мечты', 'utf-8')), smtp_user))
                 msg['To'] = to_email
                 msg.attach(MIMEText(html_body, 'html', 'utf-8'))
                 with smtplib.SMTP_SSL(smtp_host, smtp_port) as server:
