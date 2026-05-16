@@ -10,6 +10,7 @@ import { useUserActivityLogger } from '@/hooks/useUserActivityLogger';
 import { getBackgroundStyle } from '@/components/shop/utils/themeHelpers';
 import Header from '@/components/shop/Header';
 import AuthDialog from '@/components/shop/AuthDialog';
+import BanNotification from '@/components/shop/auth/BanNotification';
 import Footer from '@/components/shop/Footer';
 import AdminPanel from '@/components/shop/admin/AdminPanel';
 import CartContent from '@/components/shop/CartContent';
@@ -331,7 +332,7 @@ const Index = () => {
           />
 
           <AuthDialog
-            open={showAuthDialog}
+            open={showAuthDialog && !banInfo?.banned}
             onOpenChange={(open) => {
               setShowAuthDialog(open);
               if (!open) {
@@ -346,6 +347,15 @@ const Index = () => {
             adminCodeError={adminCodeError}
             onBanExpired={clearBanInfo}
           />
+
+          {banInfo?.banned && (
+            <BanNotification
+              open={true}
+              onOpenChange={(open) => { if (!open) clearBanInfo(); }}
+              banInfo={banInfo}
+              onBanExpired={clearBanInfo}
+            />
+          )}
         </>
       )}
     </div>
