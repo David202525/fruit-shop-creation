@@ -194,7 +194,8 @@ const Header = ({
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className={`relative overflow-visible text-white hover:bg-white/10 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/5 border border-white/20 transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}
+                className={`relative overflow-visible text-pink-100 w-9 h-9 sm:w-11 sm:h-11 rounded-full transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}
+                style={{ background: 'linear-gradient(135deg,rgba(239,68,68,0.35),rgba(236,72,153,0.35))', border: '1.5px solid rgba(252,165,165,0.4)', boxShadow: '0 0 12px rgba(239,68,68,0.25)' }}
                 onClick={() => onSectionChange('favorites')}
               >
                 <Icon name="Heart" size={16} className="sm:hidden" />
@@ -211,7 +212,7 @@ const Header = ({
 
           {user && <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className={`relative overflow-visible text-white hover:bg-white/10 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/5 border border-white/20 transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
+              <Button variant="ghost" size="icon" className={`relative overflow-visible text-amber-100 w-9 h-9 sm:w-11 sm:h-11 rounded-full transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`} style={{ background: 'linear-gradient(135deg,rgba(234,179,8,0.35),rgba(245,158,11,0.35))', border: '1.5px solid rgba(253,230,138,0.4)', boxShadow: '0 0 12px rgba(234,179,8,0.25)' }}>
                 <Icon name="ShoppingCart" size={16} className="sm:hidden" />
                 <Icon name="ShoppingCart" size={20} className="hidden sm:block" />
                 {cart.length > 0 && (
@@ -233,7 +234,7 @@ const Header = ({
           {user ? (
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className={`relative text-white hover:bg-white/10 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/5 border border-white/20 transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`}>
+                <Button variant="ghost" size="icon" className={`relative text-sky-100 w-9 h-9 sm:w-11 sm:h-11 rounded-full transition-all hover:scale-110 ${isNewYear ? 'snow-icon-button' : ''}`} style={{ background: 'linear-gradient(135deg,rgba(59,130,246,0.35),rgba(14,165,233,0.35))', border: '1.5px solid rgba(147,197,253,0.4)', boxShadow: '0 0 12px rgba(59,130,246,0.25)' }}>
                   <Icon name="User" size={16} className="sm:hidden" />
                   <Icon name="User" size={20} className="hidden sm:block" />
                   {isNewYear && <div className="icon-snow-sparkle">🎅</div>}
