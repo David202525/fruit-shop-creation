@@ -70,7 +70,6 @@ const CartContent = ({
   const [isCityDialogOpen, setIsCityDialogOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState('');
   const [citySearchQuery, setCitySearchQuery] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
   
   const deliveryEnabled = siteSettings?.delivery_enabled === true;
   const pickupEnabled = siteSettings?.pickup_enabled === true;
@@ -242,22 +241,6 @@ const CartContent = ({
             preorderEnabled={preorderEnabled}
           />
           
-          {/* Email для уведомлений */}
-          <div className="space-y-2 bg-muted/30 p-3 rounded-lg">
-            <h4 className="font-semibold text-sm flex items-center gap-2">
-              <Icon name="Mail" size={16} className="flex-shrink-0" />
-              Email для уведомлений о заказе
-            </h4>
-            <input
-              type="email"
-              placeholder="Введите ваш email (необязательно)"
-              value={customerEmail}
-              onChange={e => setCustomerEmail(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <p className="text-xs text-muted-foreground">Мы пришлём статус заказа на эту почту</p>
-          </div>
-
           <div className="space-y-3 bg-muted/30 p-3 rounded-lg">
             <h4 className="font-semibold text-sm flex items-center gap-2">
               <Icon name="CreditCard" size={16} className="flex-shrink-0" />
@@ -277,7 +260,7 @@ const CartContent = ({
               deliveryAddress={deliveryAddress}
               selectedZoneId={selectedZoneId}
               deliveryCity={deliveryCity}
-              onCheckout={(pm, dt, zoneId, city, addr) => handleCheckout(pm, dt, zoneId, city, addr, customerEmail)}
+              onCheckout={(pm, dt, zoneId, city, addr) => handleCheckout(pm, dt, zoneId, city, addr, user?.email || '')}
             />
           </div>
         </>
