@@ -133,9 +133,9 @@ const CartContent = ({
   
   const getZoneDeliveryPrice = () => {
     if (selectedCity === 'Барнаул') {
-      if (!selectedZoneId) return deliveryPrice + courierDeliveryPrice;
+      if (!selectedZoneId) return deliveryPrice;
       const zone = deliveryZones.find(z => z.id === selectedZoneId);
-      return zone ? parseFloat(zone.delivery_price) : deliveryPrice + courierDeliveryPrice;
+      return zone ? parseFloat(zone.delivery_price) : deliveryPrice;
     }
     return 0;
   };

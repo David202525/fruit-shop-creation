@@ -4,6 +4,7 @@ import OrderItem from './OrderItem';
 import DeliveryPaymentDialog from './DeliveryPaymentDialog';
 import SecondPaymentDialog from './SecondPaymentDialog';
 import { logUserAction } from '@/utils/userLogger';
+import { useToast } from '@/hooks/use-toast';
 
 interface OrdersTabProps {
   orders: Order[];
@@ -14,22 +15,23 @@ interface OrdersTabProps {
 }
 
 const OrdersTab = ({ orders, userId, userBalance, userEmail, onOrderUpdate }: OrdersTabProps) => {
+  const { toast } = useToast();
   const [cancellingOrderId, setCancellingOrderId] = useState<number | null>(null);
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const [payingDeliveryOrder, setPayingDeliveryOrder] = useState<Order | null>(null);
   const [payingSecondPaymentOrder, setPayingSecondPaymentOrder] = useState<Order | null>(null);
 
   const handleCancelOrder = async (orderId: number) => {
-    if (!confirm('Вы уверены, что хотите отменить этот заказ?')) return;
-    
     setCancellingOrderId(orderId);
     try {
-      const response = await fetch('https://functions.poehali.dev/b35bef37-8423-4939-b43b-0fb565cc8853', {
-        method: 'POST',
+      const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+      const response = await fetch(`${API_BASE}/orders`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'cancel_order',
-          order_id: orderId
+          order_id: orderId,
+          status: 'cancelled',
+          rejection_reason: 'Отменён пользователем'
         })
       });
       
@@ -44,13 +46,13 @@ const OrdersTab = ({ orders, userId, userBalance, userEmail, onOrderUpdate }: Or
           orderId
         );
         onOrderUpdate();
-        alert('Заказ успешно отменён. Средства и кэшбэк обновлены.');
+        toast({ title: 'Заказ отменён', description: `Заказ #${orderId} успешно отменён.` });
       } else {
-        alert(data.error || 'Не удалось отменить заказ');
+        toast({ title: 'Ошибка', description: data.error || 'Не удалось отменить заказ', variant: 'destructive' });
       }
     } catch (error) {
       console.error('Error cancelling order:', error);
-      alert('Произошла ошибка при отмене заказа');
+      toast({ title: 'Ошибка', description: 'Произошла ошибка при отмене заказа', variant: 'destructive' });
     } finally {
       setCancellingOrderId(null);
     }

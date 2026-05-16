@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import Icon from '@/components/ui/icon';
 import { Order } from '@/types/shop';
 import { formatDate } from '@/lib/dateUtils';
@@ -17,6 +19,8 @@ interface OrderItemProps {
 }
 
 const OrderItem = ({ order, isExpanded, onToggle, onCancel, onPayDelivery, onPayRemaining, isCancelling }: OrderItemProps) => {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   return (
     <Card className="border">
       <CardHeader 
@@ -324,19 +328,37 @@ const OrderItem = ({ order, isExpanded, onToggle, onCancel, onPayDelivery, onPay
           )}
           
           {order.status === 'pending' && (
-            <Button 
-              size="sm" 
-              variant="destructive"
-              className="w-full text-xs sm:text-sm h-9 sm:h-10"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCancel(order.id);
-              }}
-              disabled={isCancelling}
-            >
-              <Icon name="X" size={14} className="mr-1.5" />
-              {isCancelling ? 'Отмена...' : 'Отменить заказ'}
-            </Button>
+            <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="w-full text-xs sm:text-sm h-9 sm:h-10"
+                  onClick={(e) => e.stopPropagation()}
+                  disabled={isCancelling}
+                >
+                  <Icon name="X" size={14} className="mr-1.5" />
+                  {isCancelling ? 'Отмена...' : 'Отменить заказ'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Отменить заказ #{order.id}?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Это действие нельзя отменить. Если вы уже оплатили заказ — средства будут возвращены на баланс.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Не отменять</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive hover:bg-destructive/90"
+                    onClick={() => { setConfirmOpen(false); onCancel(order.id); }}
+                  >
+                    Да, отменить
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </CardContent>
       )}
