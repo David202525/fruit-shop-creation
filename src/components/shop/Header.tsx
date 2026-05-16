@@ -91,8 +91,8 @@ const Header = ({
   };
   
   return (
-    <header className="header-height sticky z-50 bg-background/60 backdrop-blur-xl border-b border-border/40 text-foreground shadow-sm overflow-hidden" style={{ top: 'var(--banner-height, 0px)' }}>
-      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-green-500/5 to-teal-500/5 pointer-events-none" />
+    <header className="header-height sticky z-50 bg-gradient-to-r from-green-800 via-emerald-800 to-green-800 text-white shadow-md overflow-hidden" style={{ top: 'var(--banner-height, 0px)' }}>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.06)_0%,transparent_70%)] pointer-events-none" />
       {isNewYear && <SnowEffect />}
       
       {isNewYear && (
@@ -132,15 +132,20 @@ const Header = ({
               <img 
                 src={siteSettings.logo_url} 
                 alt={`Логотип ${siteSettings?.site_name || 'Питомник растений'}`}
-                className="h-9 w-9 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full object-cover border-2 border-white/20 shadow-lg flex-shrink-0"
+                className="h-9 w-9 sm:h-11 sm:w-11 md:h-12 md:w-12 rounded-full object-cover border-2 border-white/30 shadow-md flex-shrink-0"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
             )}
-            <span className="font-display font-bold text-primary text-sm sm:text-lg md:text-xl truncate max-w-[120px] sm:max-w-[200px] md:max-w-none tracking-wide">
-              {siteSettings?.site_name || 'Питомник растений'}
-            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="font-display font-bold text-white text-base sm:text-xl md:text-2xl tracking-wide drop-shadow-sm truncate max-w-[130px] sm:max-w-[220px] md:max-w-none">
+                {siteSettings?.site_name || 'Питомник растений'}
+              </span>
+              <span className="hidden sm:block text-green-200 text-[10px] sm:text-xs font-sans tracking-widest uppercase opacity-80">
+                Питомник · Саженцы · Доставка
+              </span>
+            </div>
           </button>
         </div>
         
